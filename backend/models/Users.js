@@ -1,5 +1,6 @@
 const mongoose = require ('mongoose');
 
+// create schema of user for register page
 const userSchema =  new mongoose.Schema({
   firstname : {
     type : String,
@@ -24,5 +25,5 @@ const userSchema =  new mongoose.Schema({
 
 });
 
-// always write it in singular only ,it is exports through that only
+// export mongoose model
 module.exports = mongoose.model('User',userSchema); 
