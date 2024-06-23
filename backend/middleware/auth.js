@@ -3,8 +3,9 @@ const User = require('../models/Users');
 
 const auth = async (req, res, next) => {
     try {
+        console.log(req);
         // Access token from cookie
-        const token = req.cookies.token;
+        const token = req.headers.authorization;
 
         if (!token) {
             return res.status(401).json({ message: 'Authorization failed: No token provided' });

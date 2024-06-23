@@ -23,32 +23,15 @@ app.get("/", (req,res)=>{
     res.send("Cool, Welcome to the server");
 })
 
-// GET /profile endpoint with authentication middleware
-app.get("/profile", auth, async (req, res) => {
-    try {
-        // Assuming auth middleware sets user information in req.user
-        const userId = req.user.id; // Assuming id is stored in req.user from auth middleware
 
-        // Optional: Fetch user profile from database (if needed for other operations)
-        const user = await User.findById(userId);
-
-        // Respond with a success message upon successful authentication
-        res.json({
-            message: "Authenticated! Profile Page Access Granted.",
-            user: {
-                id: user._id, // Optional: Include user ID if needed
-                // Add other minimal user details as needed for frontend authentication checks
-            }
-        });
-    } catch (err) {
-        console.error("Error fetching profile:", err);
-        res.status(500).send("Internal Server Error");
-    }
-});
 
 //http method get
 app.get("/home", (req,res)=>{
     res.send("Welcome to the Home");
+})
+
+app.get("/profile" , (req,res) => {
+    res.send("Welcome to the Profile Page");
 })
 
 //http method post for register because i have to post data
@@ -128,10 +111,10 @@ app.post("/login", async (req, res) => {
         const token = jwt.sign({ id: existUser._id, email }, process.env.SECRET_KEY, {
             expiresIn: "1d"
         });
+       // update token in database after login
+        await User.updateOne({ email }, { $set: { token } });
 
         existUser.token = token;
-        existUser.save();
-
         existUser.password = undefined;
 
         // Store it in cookie
@@ -155,33 +138,7 @@ app.post("/login", async (req, res) => {
 });
 
 
-app.post('/logout', (req,res)=>{
-  console.log(req);
-  try{
-    //get token from cookie
-    let token = req.cookies.token;
-    if(!token) return res.status(400).send("no cookie provided");
-    //decode jwt token
-    let decodedUser = jwt.verify(token, process.env.SECRET_KEY);
-    if(!decodedUser || !decodedUser.id) return res.status(400).send("no user exist");
-    //find existing user
-    let existingUser = User.findById(decodedUser.id);
-    if(!existingUser) return res.status(400).send("User not found");
 
-    //delete token
-    let options = {
-        httpOnly : true,
-    }
-    res.status(500).clearCookie("token",token, options).json({
-        message : "LOGOUT Successfully!",
-        success : true,
-        decodedUser,
-    })
-  }catch(err){
-    console.error("error in deleting profile" + err);
-    res.status(500).send("INTERNAL SERVER ERROR");
-  }
-})
 
 app.listen(8000, ()=>{
     console.log("Server is listening in port : 8000");
