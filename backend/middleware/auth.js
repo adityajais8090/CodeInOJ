@@ -5,11 +5,12 @@ const auth = async (req, res, next) => {
     try {
         console.log(req);
         // Access token from cookie
-        const token = req.headers.authorization;
+        const token = req.cookies.token;
 
         if (!token) {
             return res.status(401).json({ message: 'Authorization failed: No token provided' });
         }
+        //console.log(token);
 
         // Verify token
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
@@ -26,9 +27,6 @@ const auth = async (req, res, next) => {
 
     } catch (err) {
         console.error('Error in auth middleware:', err.message);
-        if (err.name === 'JsonWebTokenError') {
-            return res.status(401).json({ message: 'Authorization failed: Invalid token' });
-        }
         res.status(500).json({ message: 'Server Error' });
     }
 };

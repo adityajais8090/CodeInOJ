@@ -30,7 +30,7 @@ app.get("/home", (req,res)=>{
     res.send("Welcome to the Home");
 })
 
-app.get("/profile" , (req,res) => {
+app.get("/profile" , auth , (req,res) => {
     res.send("Welcome to the Profile Page");
 })
 
@@ -121,6 +121,8 @@ app.post("/login", async (req, res) => {
         const options = {
             maxAge: 24 * 60 * 60 * 1000, // 1 day
             httpOnly: true, 
+            secure : true,
+            sameSite : "None",
             //secure: process.env.NODE_ENV === 'production' // Ensure the cookie is sent over HTTPS in production
         };
         
