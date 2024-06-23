@@ -35,18 +35,18 @@ export const checkData = async (data) => {
     }
 }
 
+export const getProfile = async (cookie) =>{
+ try{
+    console.log(cookie);
+    const response = await axios.get(`${API_URL}/profile`, {
+        headers: {
+          Authorization: `Bearer ${cookie}` // Assuming cookie contains the token
+        }
+      });
+    return response.data;
+ }catch(err){
+    console.log("Error in getting profile", err);
+ }
+}
 
 
-
-// export const delUser = async ()=>{
-
-//     try{
-//         const response = await axios.post(`${API_URL}/logout`,{}, {
-//             withCredentials: true, // ensure cookie sent with request
-//         });
-//         return response.data;
-
-//     }catch(err){
-//           console.log("Error in logout session :" + err);
-//     }
-// }

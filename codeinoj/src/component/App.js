@@ -7,12 +7,15 @@ import {
 
 import '../styles/App.css';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import '../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js';
 import { Home, Register, Login, Profile } from '../pages';
+import {Navbar} from './';
 
 function App() {
   //added path for pages
   return (
       <Router>
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/login" element={<Login/>} />

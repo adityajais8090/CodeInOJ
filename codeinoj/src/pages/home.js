@@ -1,24 +1,9 @@
 import '../styles/home.css';
-//import { delUser } from '../service/api';
-//import { useNavigate } from 'react-router-dom';
+
 
 const Home = () =>{
 
-  // const navigate = useNavigate();
 
-  // const handleSubmit = async (e)=>{
-  //   e.preventDefault();
-  //   try{
-  //      const response = await delUser();
-  //      console.log(response);
-  //      if (response.success) {
-  //       alert("Logged out successfully!");
-  //       return navigate ('/login');
-  //   }
-  //   }catch(err){
-  //     console.error("Error in handle Logout" + err);
-  //   }
-  // }
 
 return (
     <>

@@ -31,7 +31,7 @@ const Register = () =>{
    try {
     const response = await uploadData(user);
     console.log('Response at handleSubmit', response);
-    if(response.status == 201){
+    if(response.status === 201){
       return navigate('/');
     }
     
@@ -41,15 +41,6 @@ const Register = () =>{
   }
 
   
-
-  // useEffect((user)=>{
-  //   const getData =  async ()=>{
-  //     const data = new FormData(user);
-  //    const response = await uploadData(data);
-  //   };
-  //   getData();
-  // }, [user]);
-
 
     return (
         <>
