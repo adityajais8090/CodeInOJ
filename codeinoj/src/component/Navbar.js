@@ -7,7 +7,8 @@ const Navbar = () => {
     e.preventDefault();
     try {
       const response = await getProfile();
-      if (response.success) {
+      //console.log(response);
+      if (response.status === 200) {
         window.location.href = "/profile";
       } else {
         console.log("User not authenticated."); // Optionally handle this case

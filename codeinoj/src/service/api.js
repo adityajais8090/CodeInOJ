@@ -7,7 +7,7 @@ const API_URL = 'http://localhost:8000';
 export const uploadData = async (data) => {
     try {
         //store the response
-        const response = await axios.post(`${API_URL}/register`, JSON.stringify(data), {
+        const response = await axios.post(`${API_URL}/register`, data , {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -22,7 +22,7 @@ export const uploadData = async (data) => {
 // post login json data to backend
 export const checkData = async (data) => {
     try {
-        const response = await axios.post(`${API_URL}/login`, JSON.stringify(data), {
+        const response = await axios.post(`${API_URL}/login`, data , {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -35,15 +35,15 @@ export const checkData = async (data) => {
     }
 }
 
-export const getProfile = async (cookie) =>{
+export const getProfile = async (cookies) =>{
  try{
-    console.log(cookie);
-    const response = await axios.get(`${API_URL}/profile`, {
-        headers: {
-          Authorization: `Bearer ${cookie}` // Assuming cookie contains the token
-        }
-      });
-    return response.data;
+    console.log("here ois your cookie token",cookies.token);
+const response = await axios.get(`${API_URL}/profile`, cookies, {
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
+    return response;
  }catch(err){
     console.log("Error in getting profile", err);
  }
