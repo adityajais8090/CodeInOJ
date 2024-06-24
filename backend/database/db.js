@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
-const dotenv = require ('dotenv');
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 dotenv.config();
 
 // connect MONGO_DB database
 
-const DBconnection = async () => {
+ const DBconnection = async () => {
     const MONGODB_URL = process.env.MONGODB_URI;
  try{
      await mongoose.connect(MONGODB_URL, {useNewUrlParser : true});
@@ -15,4 +15,5 @@ const DBconnection = async () => {
  }
 }
 
-module.exports = {DBconnection};
+export default DBconnection;
+

@@ -1,7 +1,10 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/Users');
+import jwt from 'jsonwebtoken';
+import User from '../models/Users';
+import dotenv from 'dotenv';
 
-const auth = async (req, res, next) => {
+dotenv.config();
+
+export const auth = async (req, res, next) => {
     try {
         console.log(req);
         // Access token from cookie
@@ -31,4 +34,4 @@ const auth = async (req, res, next) => {
     }
 };
 
-module.exports = auth;
+

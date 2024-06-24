@@ -1,4 +1,4 @@
-const mongoose = require ('mongoose');
+import mongoose from 'mongoose';
 
 // create schema of user for register page
 const userSchema =  new mongoose.Schema({
@@ -26,4 +26,5 @@ const userSchema =  new mongoose.Schema({
 });
 
 // export mongoose model
-module.exports = mongoose.model('User',userSchema); 
+const User = mongoose.model('User',userSchema);
+export default User;
