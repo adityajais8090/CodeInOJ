@@ -1,17 +1,17 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/Users';
+import User from '../models/Users.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const auth = async (req, res, next) => {
+const auth = async (req, res, next) => {
     try {
         console.log(req);
         // Access token from cookie
         const token = req.cookies.token;
 
         if (!token) {
-            return res.status(401).json({ message: 'Authorization failed: No token provided' });
+            return res.status(404).json({ message: 'Authorization failed: No token provided' });
         }
         //console.log(token);
 
@@ -33,5 +33,6 @@ export const auth = async (req, res, next) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+export default auth;
 
 

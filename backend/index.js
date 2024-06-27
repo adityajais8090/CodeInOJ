@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import  cors from 'cors';
-//import { auth } from './middleware/auth.js';
+import { auth } from './middleware/index.js';
 dotenv.config();
 
 const app = express();
@@ -19,24 +19,18 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended : true }));
-app.use(cookieParser());
+app.use(cookieParser(process.env.SECRET_KEY));
 
 //connect to database
 DBconnection();
-app.get("/", (req,res)=>{
-    res.send("Cool, Welcome to the server");
-})
-
 
 
 //http method get
-app.get("/home", (req,res)=>{
+app.get("/", (req,res)=>{
     res.send("Welcome to the Home");
 })
 
-app.get("/profile" , (req,res) => {
-    res.send("Welcome to the Profile Page");
-})
+
 
 //http method post for register because i have to post data
 app.post("/register", async (req,res)=>{
@@ -125,9 +119,10 @@ app.post("/login", async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000, // 1 day
             httpOnly: true, 
             secure : true,
-            sameSite : "None",
+            sameSite : 'none',
             //secure: process.env.NODE_ENV === 'production' // Ensure the cookie is sent over HTTPS in production
         };
+        
         
         // Send the token
         res.status(200).cookie("token", token, options).json({
@@ -141,6 +136,25 @@ app.post("/login", async (req, res) => {
         res.status(500).send("Login Error");
     }
 });
+
+app.get("/profile", auth , (req, res) => {
+    // Perform operations to fetch profile data
+    try {
+      // Example: Fetch profile data from database or another source
+      
+  
+      // Send the profile data as JSON response
+      res.status(200).json({
+        success : true,
+        status : 200,
+      });
+    } catch (err) {
+      // Handle errors
+      console.error("Error fetching profile:", err);
+      res.status(500).send("Internal Server Error");
+    }
+  });
+  
 
 app.post("/profile/add", async(req,res)=>{
     try{
@@ -159,7 +173,7 @@ app.post("/profile/add", async(req,res)=>{
         // Find the current maximum code
         const maxProblem = await Problem.findOne().sort({ code: -1 });
         const code = maxProblem ? maxProblem.code + 1 : 1;
-        
+
         const problemtitle = title;
         //store it in database
         const problem = await Problem.create({
@@ -172,7 +186,7 @@ app.post("/profile/add", async(req,res)=>{
         const testcases = await TestCases.create({
             input,
             output,
-            problemtitle,
+            problemtitle : title,
             code,
         });
 
@@ -190,8 +204,9 @@ app.post("/profile/add", async(req,res)=>{
 })
 
 app.post("/problem/edit", async (req, res) => {
-    const { title, description, tags, input, output, code } = req.body;
-
+    console.log(req.body);
+    const { code ,title, description, tags, input, output } = req.body;
+      console.log("Code : " ,code);
     // Check all the details
     if (!(title && description && tags && input && output && code)) {
         return res.status(400).send("Complete all problem details");
@@ -241,29 +256,49 @@ app.post("/problem/edit", async (req, res) => {
 });
 
 
-
-app.get("/problemset/problem", async ( req, res) => {
-    // get the data from request
-      const {code, title} = req.body;
-      //check all data is present
-       if(!(code && title)){
-        return res.status(500).send("Complete all details");
-       }
-      //check it in database problem and test cases
-      const existProblem = await Problem.findOne({code});
-      const testcases = await TestCases.findOne({code});
-      if(!(existProblem && testcases)){
-        return res.status(500).send("problem not found");
-      }
-      //send response
-      return res.status(400).json({
-        message : "Get Problem Successfully!",
-        existProblem,
-        testcases,
-      })
+app.get('/problemset', async (req, res) => {
+    try {
+        const problems = await Problem.find();
+       //console.log("here is  your Problems : " , problems);
+        res.json(problems);
+    } catch (err) {
+        res.json(err);
+    }
 });
 
-app.delete("/profile/problem/delete", async (req, res) => {
+
+app.get("/problemset/problem", async (req, res) => {
+    // Get the data from request
+    const { code } = req.query;
+  
+    // Check if all data is present
+    if (!code) {
+      return res.status(400).send("Complete all details");  // Status 400 for Bad Request
+    }
+  
+    try {
+      // Check it in database problem and test cases
+      const existProblem = await Problem.findOne({ code });
+      const testcases = await TestCases.findOne({ code });
+  
+      if (!(existProblem && testcases)) {
+        return res.status(404).send("Problem not found");  // Status 404 for Not Found
+      }
+  
+      // Send response
+      return res.status(200).json({
+        message: "Get Problem Successfully!",
+        existProblem,
+        testcases,
+      });
+    } catch (error) {
+      console.error("Error fetching problem:", error);
+      return res.status(500).send("Internal Server Error");
+    }
+  });
+  
+
+app.delete("/problemset/problem/delete", async (req, res) => {
     try {
         const { code } = req.body;
         if (!code) {
