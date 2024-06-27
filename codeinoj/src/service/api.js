@@ -12,7 +12,7 @@ export const uploadData = async (data) => {
                 "Content-Type": "application/json",
             },
         });
-         console.log(response.data);
+         
         return response;
     } catch (err) {
         console.error("Error in Uploading form Data: " + err.response.data);
@@ -23,11 +23,13 @@ export const uploadData = async (data) => {
 export const checkData = async (data) => {
     try {
         const response = await axios.post(`${API_URL}/login`, data , {
+            withCredentials : true,
             headers: {
                 "Content-Type": "application/json",
             },
         });
-
+        console.log("here is my response data : ", response.data);
+       
         return response.data;
     } catch (err) {
         console.error("Error in Upload Login data: " + err);
@@ -35,18 +37,107 @@ export const checkData = async (data) => {
     }
 }
 
-export const getProfile = async (cookies) =>{
+export const getProfile = async () => {
  try{
-    console.log("here ois your cookie token",cookies.token);
-const response = await axios.get(`${API_URL}/profile`, cookies, {
+const response = await axios.get(`${API_URL}/profile`,{
+    withCredentials: true,
     headers: {
-        "Content-Type": "application/json",
+      "Content-Type": "application/json",
     },
-});
-    return response;
+    });
+    return response.data;
  }catch(err){
     console.log("Error in getting profile", err);
+    return err;
  }
 }
+
+export const getProblemSet = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/problemset`, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Response:", response);
+    const problems = Array.isArray(response.data) ? response.data : Object.values(response.data);
+    return problems;
+  } catch (err) {
+    console.log("Error in getting problemSet api:", err);
+    return []; // Return an empty array in case of error
+  }
+};
+
+export const getProblems = async (code) => {
+    try {
+      const response = await axios.get(`${API_URL}/problemset/problem`, {
+        params: { code },
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (err) {
+      console.log("Error in getting problems", err);
+      return err;
+    }
+  }
+
+  export const uploadProblem = async (data) => {
+    try {
+      //store the response
+      const response = await axios.post(`${API_URL}/profile/add`, data , {
+        withCredentials: true,
+          headers: {
+              "Content-Type": "application/json",
+          },
+      });
+       
+      return response;
+  } catch (err) {
+      console.error("Error in Uploading form Data: " + err.response.data);
+      return err;
+  }
+  }
+
+  export const updateProblem = async(data) => {
+    try{
+      console.log("Data in api", data);
+      const response = await axios.post(`${API_URL}/problem/edit`, data , {
+        withCredentials: true,
+          headers: {
+              "Content-Type": "application/json",
+          },
+      });
+       
+      return response;
+
+    }catch(err){
+      console.error("Error in Updating form Data: " + err.response.data);
+      return err;
+    }
+  }
+  
+
+  export const deleteProblem = async (data) => {
+      try {
+          // Store the response
+          console.log("Data in api : " , data);
+          const response = await axios.delete(`${API_URL}/problemset/problem/delete`, {
+              data: data,
+              withCredentials: true,
+              headers: {
+                  "Content-Type": "application/json",
+              },
+          });
+          return response;
+      } catch (err) {
+          console.error("Error in deleting the problem: " + err.response.data);
+          return err;
+      }
+  }
+  
 
 
