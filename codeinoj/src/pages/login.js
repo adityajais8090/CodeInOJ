@@ -1,36 +1,35 @@
 import '../styles/login.css';
-import { useState } from 'react';
+import { useState , useContext } from 'react';
 import { checkData } from '../service/api';
 import { useNavigate } from 'react-router-dom';
+import UserContext from '../context/user/userContext';
+
+
 
 const Login = () => {
-  const navigate = useNavigate();
-
-  // State to manage user input
-  const [user, setUser] = useState({
+  const { fetchUserProfile } = useContext(UserContext);
+ 
+ const navigate = useNavigate();
+  const [userInput, setUserInput] = useState({
     email: "",
     password: "",
   });
 
-  // Handle input changes
   const handleInput = (e) => {
     const { name, value } = e.target;
-    setUser({
-      ...user,
+    setUserInput({
+      ...userInput,
       [name]: value,
     });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user);
     try {
-      const response = await checkData(user);
-      console.log('Response:', response);
-
-      // Check if login was successful
+      const response = await checkData(userInput);
       if (response.success) {
+        console.log("Checkers :", response.existUser);
+     fetchUserProfile();
         navigate('/');
       } else {
         console.error('Login failed:', response.message);
@@ -56,7 +55,7 @@ const Login = () => {
                     aria-describedby="emailHelp"
                     placeholder="Enter email"
                     name="email"
-                    value={user.email}
+                    value={userInput.email}
                     onChange={handleInput}
                   />
                   <small id="emailHelp" className="form-text text-muted">
@@ -71,7 +70,7 @@ const Login = () => {
                     id="exampleInputPassword1"
                     placeholder="Password"
                     name="password"
-                    value={user.password}
+                    value={userInput.password}
                     onChange={handleInput}
                   />
                 </div>

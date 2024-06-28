@@ -1,9 +1,18 @@
-import React from 'react';
-
+import React, { useContext, useEffect } from 'react';
+import UserContext from '../context/user/userContext';
 
 const Profile = () => {
+    const { user, fetchUserProfile } = useContext(UserContext);
 
+    useEffect(() => {
+        if (!user) {
+            fetchUserProfile();
+        }
+    }, [user]);
 
+    if (!user) {
+        return <div>Loading...</div>;
+    }
     
   return (
     <div style={{ backgroundColor: '#eee' }}>
@@ -15,7 +24,7 @@ const Profile = () => {
               <div className="card-body text-center">
                 <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
                   className="rounded-circle img-fluid" style={{ width: '150px' }} />
-                <h5 className="my-3">John Smith</h5>
+                <h5 className="my-3">{`${user.firstname} ${user.lastname}`}</h5>
                 <p className="text-muted mb-1">Full Stack Developer</p>
                 <p className="text-muted mb-4">Bay Area, San Francisco, CA</p>
                 <div className="d-flex justify-content-center mb-2">
@@ -59,7 +68,7 @@ const Profile = () => {
                     <p className="mb-0">Full Name</p>
                   </div>
                   <div className="col-sm-9">
-                    <p className="text-muted mb-0">Johnatan Smith</p>
+                    <p className="text-muted mb-0">{`${user.firstname} ${user.lastname}`}</p>
                   </div>
                 </div>
                 <hr />
@@ -68,7 +77,7 @@ const Profile = () => {
                     <p className="mb-0">Email</p>
                   </div>
                   <div className="col-sm-9">
-                    <p className="text-muted mb-0">example@example.com</p>
+                    <p className="text-muted mb-0">{user.email}</p>
                   </div>
                 </div>
                 <hr />

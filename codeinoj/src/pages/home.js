@@ -21,7 +21,7 @@ const Home = () => {
 
   const handleProblem = (problem, event) => {
     event.preventDefault();
-    navigate('/problemset/problem', { state: { problem } });
+    navigate(`/problemset/problem/${problem.code}`, { state: { problem } });
   };
 
   return (

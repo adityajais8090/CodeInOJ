@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPenNib, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { getProblemSet, uploadProblem, deleteProblem, updateProblem } from '../service/api';
+import { getProblemSet, uploadProblem, deleteProblem, updateProblem, getTestCases } from '../service/api';
 
 const Admin = () => {
   const [problems, setProblems] = useState([]);
@@ -17,6 +17,10 @@ const Admin = () => {
     input: "",
     output: ""
   });
+  const [testcases, setTestcases] = useState({
+    input: '',
+    output: ''
+  });
 
   useEffect(() => {
     fetchData();
@@ -30,6 +34,9 @@ const Admin = () => {
       console.error('Error fetching problems:', error);
     }
   };
+
+  
+  
 
   const handleDashboard = () => {
     setActiveSection('dashboard');
@@ -131,6 +138,23 @@ const Admin = () => {
       }
     } catch (err) {
       console.error('Error in updateProblem:', err);
+    }
+  };
+
+  const fetchTestCases = async () => {
+    try {
+      const response = await getTestCases(problem.code);
+      console.log("Response from Problem:", response.testcases);
+
+      if (response.success) {
+        setTestcases({
+          ...testcases,
+          input: response.testcases.input,
+          output: response.testcases.output
+        });
+      }
+    } catch (err) {
+      console.log("Error in getting TestCases", err);
     }
   };
 
@@ -454,7 +478,7 @@ const Admin = () => {
                   rows={3}
                   placeholder="Enter input details"
                   name="input"
-                  value={problem.input}
+                  value={testcases.input}
                   onChange={handleInput}
                 />
               </Form.Group>
@@ -466,7 +490,7 @@ const Admin = () => {
                   rows={3}
                   placeholder="Enter expected output"
                   name="output"
-                  value={problem.output}
+                  value={testcases.output}
                   onChange={handleInput}
                 />
               </Form.Group>
