@@ -20,7 +20,7 @@ const problemSchema = new mongoose.Schema({
         required : true
     },
     testcaseId : {
-        type : String,
+        type : [String],
     }
 });
 

@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import  cors from 'cors';
-import { auth } from './middleware/index.js';
+import { auth , authAdmin } from './middleware/index.js';
 dotenv.config();
 
 const app = express();
@@ -38,9 +38,9 @@ app.post("/register", async (req,res)=>{
     try{
         // get all the data from request body
         //destructure at once from req
-        const {firstname, lastname, email, password}  = req.body;
+        const {firstname, lastname, email, password, role}  = req.body;
         // check all data is correct & exist
-        if(!(firstname && lastname && email && password)){
+        if(!(firstname && lastname && email && password && role)){
             return res.status(400).send("Please enter all  the require details")
         }
         //here we have to make a database
@@ -59,10 +59,11 @@ app.post("/register", async (req,res)=>{
            firstname,
            lastname,
            email,
-           password : hashPassword
+           password : hashPassword,
+           role,
         });
         // generate a token (jwt) for user and send it
-        const token = jwt.sign({id : user._id, email},process.env.SECRET_KEY,{
+        const token = jwt.sign({id : user._id, email, role},process.env.SECRET_KEY,{
             expiresIn : "1h"
         });
 
@@ -137,33 +138,74 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.get("/profile", auth , (req, res) => {
-    // Perform operations to fetch profile data
+app.delete('/logout', auth, (req, res) => {
     try {
-      // Example: Fetch profile data from database or another source
-      
+      res.clearCookie('token').json({
+        message: 'Logout Successfully!',
+        success: true,
+      });
+    } catch (err) {
+      console.log('Failed to logout:', err);
+      res.status(500).json({
+        message: 'Server Error',
+        success: false,
+      });
+    }
+  });
+
+  app.get("/profile", auth, async (req, res) => {
+    try {
+      const token = req.cookies.token; // Corrected token extraction
+  
+      if (!token) {
+        return res.status(401).json({
+          message: "No token provided",
+          success: false,
+        });
+      }
+  
+      // Fetch the user using the token
+      const existUser = await User.findOne({ token });
   
       // Send the profile data as JSON response
       res.status(200).json({
-        success : true,
-        status : 200,
+        success: true,
+        status: 200,
+        existUser,
       });
     } catch (err) {
       // Handle errors
       console.error("Error fetching profile:", err);
-      res.status(500).send("Internal Server Error");
+      res.status(500).json({
+        message: "Internal Server Error",
+        success: false,
+      });
     }
   });
   
 
-app.post("/profile/add", async(req,res)=>{
+app.get("/admin", authAdmin , (req,res) => {
+    try{
+        res.json({
+            message : "Welcome to admin page",
+            success : true,
+        })
+
+    }catch(error){
+        console.log("Invalid Credentials Login again : ", err );
+    }
+    
+})  
+  
+
+app.post("/profile/add", authAdmin , async(req,res)=>{
     try{
         console.log(req.body);
          // get problem and test cases
         const {title, description, tags, input , output} = req.body;
         //check all data should be correct and exist
         if(!(title && description && tags && input && output)){
-            return res.status(500).send("Complete all the details");
+            return res.status(400).send("Complete all the details");
         }
         //check that problem should be unique
         const existingProblem = await Problem.findOne({title});
@@ -188,7 +230,12 @@ app.post("/profile/add", async(req,res)=>{
             output,
             problemtitle : title,
             code,
+            problemId : problem.id,
         });
+        problem.testcaseId = [testcases._id.toString()];
+        await problem.save();
+       
+        console.log("Here is my problemId : ", problem.id );
 
         res.status(201).json({
             message : "Problem Added Successfully !",
@@ -203,7 +250,7 @@ app.post("/profile/add", async(req,res)=>{
     }
 })
 
-app.post("/problem/edit", async (req, res) => {
+app.post("/problem/edit", authAdmin , async (req, res) => {
     console.log(req.body);
     const { code ,title, description, tags, input, output } = req.body;
       console.log("Code : " ,code);
@@ -296,9 +343,38 @@ app.get("/problemset/problem", async (req, res) => {
       return res.status(500).send("Internal Server Error");
     }
   });
+
+  app.get("/problemset/problem/testcases", async (req, res) => {
+    // Get the data from request
+    const { code } = req.query;
+  
+    // Check if all data is present
+    if (!code) {
+      return res.status(400).send("Complete all details");  // Status 400 for Bad Request
+    }
+  
+    try {
+      // Check it in database problem and test cases
+      const testcases = await TestCases.findOne({ code });
+  
+      if (!(testcases)) {
+        return res.status(404).send("TestCase not found");  // Status 404 for Not Found
+      }
+  
+      // Send response
+      return res.status(200).json({
+        message: "Get TestCases Successfully!",
+        success : true,
+        testcases,
+      });
+    } catch (error) {
+      console.error("Error fetching problem:", error);
+      return res.status(500).send("Internal Server Error");
+    }
+  });
   
 
-app.delete("/problemset/problem/delete", async (req, res) => {
+app.delete("/problemset/problem/delete", authAdmin, async (req, res) => {
     try {
         const { code } = req.body;
         if (!code) {
