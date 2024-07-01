@@ -11,6 +11,7 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const response = await getProblemSet();
+        console.log("Response from Home:", response);
         setProblems(response);
       } catch (error) {
         console.error('Error fetching problems:', error);
@@ -42,15 +43,20 @@ const Home = () => {
           Solution
         </div>
       </div>
-
+      
       <div className="table">
         {problems.map((problem, index) => (
+          
           <div key={index} className={`row custom-row-style ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}>
             <div className="col-6 col-md-2 p-3 text-center">
               {problem.status || "pending"}
             </div>
             <div className={`col-6 col-md-6 p-3`}>
-              <a className={`${index % 2 === 0 ? 'even-row' : 'odd-row'}`} href="/problemset/problem" onClick={(event) => handleProblem(problem, event)} >
+              <a
+                className={`${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
+                href="/problemset/problem"
+                onClick={(event) => handleProblem(problem, event)}
+              >
                 {`${problem.code}. ${problem.title}`}
               </a>
             </div>

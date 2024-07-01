@@ -1,0 +1,15 @@
+.expanding-textbox {
+    width: 100%;
+    max-width: 300px; /* Adjust as needed */
+    height: 1.5em; /* Height of one line */
+    transition: height 0.3s ease;
+    overflow: hidden;
+    resize: none; /* Prevent manual resizing */
+}
+
+.expanding-textbox.expanded {
+    height: auto;
+    max-height: 200px; /* Adjust to limit max height */
+}
+
+
