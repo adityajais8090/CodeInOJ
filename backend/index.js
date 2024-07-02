@@ -202,9 +202,9 @@ app.post("/profile/add", authAdmin , async(req,res)=>{
     try{
         console.log(req.body);
          // get problem and test cases
-        const {title, description, tags, input , output} = req.body;
+        const {title, description, constraints, tags, input1 , output1, input2, output2} = req.body;
         //check all data should be correct and exist
-        if(!(title && description && tags && input && output)){
+        if(!(title && description && constraints && tags && input1 && output1 && input2 && output2)){
             return res.status(400).send("Complete all the details");
         }
         //check that problem should be unique
@@ -216,23 +216,31 @@ app.post("/profile/add", authAdmin , async(req,res)=>{
         const maxProblem = await Problem.findOne().sort({ code: -1 });
         const code = maxProblem ? maxProblem.code + 1 : 1;
 
-        const problemtitle = title;
         //store it in database
         const problem = await Problem.create({
           title,
           description,
+          constraints,
           tags,
           code,
         });
-
-        const testcases = await TestCases.create({
-            input,
-            output,
+       // store the sample test cases
+        const testcases1 = await TestCases.create({
+            input : input1,
+            output : output1,
             problemtitle : title,
             code,
             problemId : problem.id,
         });
-        problem.testcaseId = [testcases._id.toString()];
+        const testcases2 = await TestCases.create({
+            input : input2,
+            output : output2,
+            problemtitle : title,
+            code,
+            problemId : problem.id,
+        });
+
+        problem.testcaseId = [testcases1._id, testcases2._id];
         await problem.save();
        
         console.log("Here is my problemId : ", problem.id );
@@ -240,9 +248,9 @@ app.post("/profile/add", authAdmin , async(req,res)=>{
         res.status(201).json({
             message : "Problem Added Successfully !",
             problem,
-            testcases,
+            testcases1,
+            testcases2,
         });
-
 
     }catch(err){
         console.log("Error in adding Problem : " , err);
@@ -250,12 +258,89 @@ app.post("/profile/add", authAdmin , async(req,res)=>{
     }
 })
 
-app.post("/problem/edit", authAdmin , async (req, res) => {
+app.post("/profile/add/testcases", async(req, res) => {
+  const { inputTestcases, outputTestcases, code } = req.body;
+  if (!(inputTestcases && outputTestcases && code)) {
+      return res.status(404).json({
+          message: "Fill all the details",
+          success: false,
+      });
+  }
+  const existProblem = await Problem.findOne({code});
+  const existTestcases = await TestCases.findOne({ code });
+  if (!(existTestcases && existProblem)) {
+      return res.status(404).json({
+          message: "Sample TestCases do not exist",
+          success: false,
+      });
+  }
+
+  function extractTestCases(existTestcases, inputTestcases, outputTestcases) {
+      // Determine the number of lines per test case from the existing test cases
+      let linesPerTestCaseInput = existTestcases.input.split('\n').length;
+      let linesPerTestCaseOutput = existTestcases.output.split('\n').length;
+
+      // Split the input and output strings into lines
+      let inputLines = inputTestcases.trim().split('\n');
+      let outputLines = outputTestcases.trim().split('\n');
+
+      // Check if input and output test cases are in the correct proportion
+      if (inputLines.length % linesPerTestCaseInput !== 0 || outputLines.length % linesPerTestCaseOutput !== 0) {
+          throw new Error("Input and output test cases are not in the correct proportion as defined by existTestcases.");
+      }
+
+      // Extract input and output test cases based on the detected number of lines
+      let inputTestCases = [];
+      for (let i = 0; i < inputLines.length; i += linesPerTestCaseInput) {
+          let inputTestCase = inputLines.slice(i, i + linesPerTestCaseInput).join('\n');
+          inputTestCases.push(inputTestCase);
+      }
+
+      let outputTestCases = [];
+      for (let i = 0; i < outputLines.length; i += linesPerTestCaseOutput) {
+          let outputTestCase = outputLines.slice(i, i + linesPerTestCaseOutput).join('\n');
+          outputTestCases.push(outputTestCase);
+      }
+
+      return { inputTestCases, outputTestCases };
+  }
+
+  try {
+      const { inputTestCases, outputTestCases } = extractTestCases(existTestcases, inputTestcases, outputTestcases);
+
+      // Store the extracted test cases in the database
+      for (let i = 0; i < inputTestCases.length; i++) {
+          let newTestCase = new TestCases({
+              input: inputTestCases[i],
+              output: outputTestCases[i],
+              code: code,
+              problemtitle : existProblem.title,
+              problemId : existProblem._id,
+          });
+          console.log("Here is my testcases :", newTestCase);
+          await newTestCase.save();
+      }
+
+      return res.status(200).json({
+          message: "Test cases added successfully",
+          success: true,
+      });
+  } catch (error) {
+      return res.status(400).json({
+          message: error.message,
+          success: false,
+      });
+  }
+});
+
+
+app.post("/problem/edit", authAdmin, async (req, res) => {
     console.log(req.body);
-    const { code ,title, description, tags, input, output } = req.body;
-      console.log("Code : " ,code);
-    // Check all the details
-    if (!(title && description && tags && input && output && code)) {
+    const { code, title, description, constraints, tags, input1, output1, input2, output2 } = req.body;
+    console.log("Code: ", code);
+
+    // Check all the details are present
+    if (!(title && description && constraints && tags && input1 && output1 && input2 && output2 && code)) {
         return res.status(400).send("Complete all problem details");
     }
 
@@ -265,30 +350,37 @@ app.post("/problem/edit", authAdmin , async (req, res) => {
 
         // Find existing problem and test cases
         const existProblem = await Problem.findOne({ code });
-        const existTestcases = await TestCases.findOne({ code });
+        const testcase1 = await TestCases.findById(existProblem.testcaseId[0]);
+        const testcase2 = await TestCases.findById(existProblem.testcaseId[1]);
 
-        if (!existProblem || !existTestcases) {
+        if (!(existProblem && testcase1 && testcase2)) {
             console.log("Problem or test cases not found for code:", code);
             return res.status(404).send("Problem not found");
         }
 
         const problemId = existProblem._id;
-        const testcaseId = existTestcases._id;
         const problemtitle = title;
+
+        // Update the test cases
+        await TestCases.updateOne(
+            { _id: existProblem.testcaseId[0] },
+            {
+                $set: { input: input1, output: output1, problemtitle, problemId }
+            }
+        );
+
+        await TestCases.updateOne(
+            { _id: existProblem.testcaseId[1] },
+            {
+                $set: { input: input2, output: output2, problemtitle, problemId }
+            }
+        );
 
         // Update the problem
         await Problem.updateOne(
             { code },
             {
-                $set: { title, description, tags, testcaseId }
-            }
-        );
-
-        // Update the test cases
-        await TestCases.updateOne(
-            { code },
-            {
-                $set: { input, output, problemtitle, problemId }
+                $set: { title, description, constraints, tags }
             }
         );
 
@@ -350,28 +442,50 @@ app.get("/problemset/problem", async (req, res) => {
   
     // Check if all data is present
     if (!code) {
-      return res.status(400).send("Complete all details");  // Status 400 for Bad Request
+      return res.status(400).json({
+        message: "Complete all details",  // Status 400 for Bad Request
+        success: false,
+      });
     }
   
     try {
-      // Check it in database problem and test cases
-      const testcases = await TestCases.findOne({ code });
+      // Check in the database for test cases
+     const existProblem = await Problem.findOne({code});
+     const existTestcase = await TestCases.find({code});
   
-      if (!(testcases)) {
-        return res.status(404).send("TestCase not found");  // Status 404 for Not Found
+      if (!(existProblem && existTestcase)) {
+        return res.status(404).json({
+          message: "Problem or TestCase not found",  // Status 404 for Not Found
+          success: false,
+        });
+      }
+      const testcases1 = await TestCases.findById(existProblem.testcaseId[0]);
+      const testcases2 = await TestCases.findById(existProblem.testcaseId[1]);
+
+      if(!(testcases1 && testcases2)){
+        return res.status(404).json({
+            message : "testcase not found",
+            success : false,
+        })
       }
   
-      // Send response
+      // Send response with 2 test cases
       return res.status(200).json({
         message: "Get TestCases Successfully!",
-        success : true,
-        testcases,
+        success: true,
+        testcases: [testcases1, testcases2],
+        existTestcase, // Return the first 2 test cases
+        existProblem,
       });
     } catch (error) {
-      console.error("Error fetching problem:", error);
-      return res.status(500).send("Internal Server Error");
+      console.error("Error fetching test cases:", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        success: false,
+      });
     }
-  });
+});
+
   
 
 app.delete("/problemset/problem/delete", authAdmin, async (req, res) => {

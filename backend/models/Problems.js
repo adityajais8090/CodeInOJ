@@ -11,6 +11,10 @@ const problemSchema = new mongoose.Schema({
         type : String,
         required : true,
     },
+    constraints : {
+        type : [String],
+        required : true,
+    },
     tags : {
       type : [String],
       required : true,
