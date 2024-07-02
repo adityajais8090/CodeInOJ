@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/home.css';
 import { getProblemSet } from '../service/api';
 
+
 const Home = () => {
   const navigate = useNavigate();
   const [problems, setProblems] = useState([]);
@@ -22,7 +23,7 @@ const Home = () => {
 
   const handleProblem = (problem, event) => {
     event.preventDefault();
-    navigate(`/problemset/problem/${problem.code}`, { state: { problem } });
+    navigate(`/problemset/problem/${problem.code}`);
   };
 
   return (

@@ -129,6 +129,7 @@ export const getTestCases = async(code) => {
           "Content-Type": "application/json",
         },
       });
+      console.log("Here is my response data : ", response.data);
       return response.data;
     }catch(err){
       console.log("Error in getting testcases", err);
@@ -188,6 +189,19 @@ export const getTestCases = async(code) => {
           console.error("Error in deleting the problem: " + err.response.data);
           return err;
       }
+  }
+
+  export const runOutput = async (payload) => {
+    try {
+      const { data } = await axios.post('http://localhost:5000/run', payload, {
+          headers: {
+              "Content-Type": "application/json",
+          },
+      });
+      return data;
+  } catch (error) {
+      console.log(error.response);
+  }
   }
   
 
