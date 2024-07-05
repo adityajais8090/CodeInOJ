@@ -1,6 +1,6 @@
 import express from 'express';
 import DBconnection from './database/db.js';
-import {User, Problem, TestCases } from './models/index.js';
+import {User, Problem, TestCases, Contest } from './models/index.js';
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -408,19 +408,20 @@ app.get('/problemset', async (req, res) => {
 
 app.get("/problemset/problem", async (req, res) => {
     // Get the data from request
-    const { code } = req.query;
+    const { id } = req.query;
   
     // Check if all data is present
-    if (!code) {
+    if (!id) {
       return res.status(400).send("Complete all details");  // Status 400 for Bad Request
     }
   
     try {
       // Check it in database problem and test cases
-      const existProblem = await Problem.findOne({ code });
-      const testcases = await TestCases.findOne({ code });
+      const existProblem = await Problem.findOne({ _id: id });
+
+      console.log("Problem from backend : ", existProblem);
   
-      if (!(existProblem && testcases)) {
+      if (!existProblem) {
         return res.status(404).send("Problem not found");  // Status 404 for Not Found
       }
   
@@ -428,13 +429,13 @@ app.get("/problemset/problem", async (req, res) => {
       return res.status(200).json({
         message: "Get Problem Successfully!",
         existProblem,
-        testcases,
       });
     } catch (error) {
       console.error("Error fetching problem:", error);
       return res.status(500).send("Internal Server Error");
     }
   });
+  
 
   app.get("/problemset/problem/testcases", async (req, res) => {
     // Get the data from request
@@ -515,6 +516,145 @@ app.delete("/problemset/problem/delete", authAdmin, async (req, res) => {
         return res.status(500).send("Internal Server Error");
     }
 });
+
+app.post("/submit", auth, async (req, res) => {
+    const { problemId, code, status } = req.body;
+
+    // Check if problemId and status are provided
+    if (!(problemId && status && code)) {
+        return res.status(404).json({
+            message: "Send all the data",
+            success: false,
+        });
+    }
+
+    // Extract token from cookies
+    const token = req.cookies.token;
+    try {
+        // Update the submissions array
+        await User.updateOne(
+            { token },
+            {
+                $push: { submissions: { problemId, code, status } },
+            }
+        );
+
+        res.status(200).json({
+            message: "Submission updated successfully",
+            success: true,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            success: false,
+            error: error.message,
+        });
+    }
+});
+
+app.post("/create/contest", authAdmin, async (req, res) => {
+    const { title, contestCode, startTime, endTime, duration } = req.body;
+    
+    if (!(title && contestCode && startTime && endTime && duration)) {
+        return res.status(400).json({
+            message: "Please fill all required fields",
+            success: false,
+        });
+    }
+
+    try {
+          
+        const contest = await Contest.create({
+            title,
+            contestCode,
+            startTime: new Date(startTime),
+            endTime: new Date(endTime),
+            duration,
+        });
+
+        res.status(201).json({
+            message: "Contest created successfully!",
+            contest,
+            success: true,
+        });
+    } catch (error) {
+        console.log("Error in creating Contest:", error);
+        res.status(500).json({
+            message: "Failed to create contest",
+            error: error.message,
+            success: false,
+        });
+    }
+});
+
+
+app.post("/update/contest", authAdmin, async (req, res) => {
+    const { contestCode, problemCode } = req.body;
+
+    if (!(contestCode && problemCode)) {
+        return res.status(400).json({
+            message: "Both contestCode and problemCode are required",
+            success: false,
+        });
+    }
+
+    try {
+        const contest = await Contest.findOne({ contestCode });
+        if (!contest) {
+            return res.status(404).json({
+                message: "Contest not found",
+                success: false,
+            });
+        }
+
+        const problem = await Problem.findOne({ code: problemCode });
+        if (!problem) {
+            return res.status(404).json({
+                message: "Problem not found",
+                success: false,
+            });
+        }
+
+        await Contest.updateOne({ contestCode }, { $push: { problemId: problem._id } });
+    
+
+        res.status(200).json({
+            message: "Contest updated successfully",
+            contest,
+            success: true,
+        });
+    } catch (error) {
+        console.error("Error in updating Contest:", error);
+        res.status(500).json({
+            message: "Failed to update contest",
+            error: error.message,
+            success: false,
+        });
+    }
+});
+
+
+
+
+app.get("/contests/contest", auth, async (req, res) => {
+    try {
+        const getContest = await Contest.find();
+        return res.status(200).json({
+            message: "get all contest",
+            data : getContest,
+            success: true,
+        });
+    } catch (error) {
+        console.error("Error in finding contest:", error);
+        return res.status(500).json({
+            message: "Error in finding contest",
+            error: error.message,
+            success: false,
+        });
+    }
+});
+
+
 
 
 app.listen(8000, ()=>{
