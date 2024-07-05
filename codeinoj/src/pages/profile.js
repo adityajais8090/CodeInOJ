@@ -1,23 +1,112 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import UserContext from '../context/user/userContext';
+import { getProblemSet } from '../service/api'; // Make sure this function returns complete problem data
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const Profile = () => {
-    const { user, fetchUserProfile } = useContext(UserContext);
+  const [problems, setProblems] = useState([]);
+  const [submitProblem, setSubmitProblem] = useState([]);
+  const [skillsProgress, setSkillsProgress] = useState({});
+  const { user, fetchUserProfile } = useContext(UserContext);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!user) {
-            fetchUserProfile();
-        }
-    }, [user]);
-
-    if (!user) {
-        return <div>Loading...</div>;
+ useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await getProblemSet();
+      console.log("Response from ProblemSet:", response);
+      setProblems(response);
+    } catch (error) {
+      console.error('Error fetching problems:', error);
     }
-    
+  };
+
+  if (!user) {
+    fetchUserProfile();
+  }
+  fetchData();
+}, [user, fetchUserProfile]);
+
+useEffect(() => {
+  if (user && user.submissions && problems.length) {
+    console.log("Here is my submission :", user.submissions);
+    const matchedProblems = [];
+    user.submissions.forEach(submission => {
+      const matchedProblem = problems.find(problem => problem._id === submission.problemId);
+      if (matchedProblem && !matchedProblems.some(problem => problem._id === matchedProblem._id)) {
+        matchedProblems.push(matchedProblem);
+      }
+    });
+    console.log("Here is my matched Problems : ",matchedProblems)
+    setSubmitProblem(matchedProblems);
+
+     // Calculate skills progress
+     const skills = ["Array", "String", "TwoPointer", "DP", "Graph"];
+     const skillsCount = {};
+
+     matchedProblems.forEach(problem => {
+       if (problem.tags) {
+         problem.tags.forEach(tag => {
+           if (skills.includes(tag)) {
+             skillsCount[tag] = (skillsCount[tag] || 0) + 1;
+           }
+         });
+       }
+     });
+
+     const totalSkills = skills.reduce((acc, skill) => {
+       const total = problems.filter(problem => problem.tags && problem.tags.includes(skill)).length;
+       return { ...acc, [skill]: total };
+     }, {});
+
+     const skillsProgress = skills.reduce((acc, skill) => {
+       const achieved = skillsCount[skill] || 0;
+       const total = totalSkills[skill] || 1;
+       return { ...acc, [skill]: (achieved / total) * 100 };
+     }, {});
+
+     setSkillsProgress(skillsProgress);
+
+
+
+  }
+}, [user, problems]);
+
+
+
+
+
+
+  const totalProblemSolved = () => {
+    if (user && user.submissions) {
+      return user.submissions.filter(sub => sub.status === "passed").length;
+    }
+    return 0;
+  };
+
+  const getSubmissionStatus = (problemId) => {
+    if (user && user.submissions) {
+      const submission = user.submissions.find(sub => sub.problemId === problemId);
+     
+      return submission ? (submission.status === "passed" ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faTimes} />) : ' ';
+    }
+    return 'pending';
+  };
+
+  const handleProblem = (problem, event) => {
+    event.preventDefault();
+    navigate(`/problemset/problem/${problem.code}`);
+  };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div style={{ backgroundColor: '#eee' }}>
       <div className="container py-5">
-        
         <div className="row">
           <div className="col-lg-4">
             <div className="card mb-4">
@@ -34,150 +123,84 @@ const Profile = () => {
               </div>
             </div>
             <div className="card mb-4 mb-lg-0">
-              <div className="card-body p-0">
-                <ul className="list-group list-group-flush rounded-3">
-                  <li className="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i className="fas fa-globe fa-lg text-warning"></i>
-                    <p className="mb-0">https://mdbootstrap.com</p>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i className="fab fa-github fa-lg text-body"></i>
-                    <p className="mb-0">mdbootstrap</p>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i className="fab fa-twitter fa-lg" style={{ color: '#55acee' }}></i>
-                    <p className="mb-0">@mdbootstrap</p>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i className="fab fa-instagram fa-lg" style={{ color: '#ac2bac' }}></i>
-                    <p className="mb-0">mdbootstrap</p>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i className="fab fa-facebook-f fa-lg" style={{ color: '#3b5998' }}></i>
-                    <p className="mb-0">mdbootstrap</p>
-                  </li>
-                </ul>
+              <div className="card-body mb-md-0">
+              <p className="mb-4"><span className="text-primary font-italic me-1">Skills</span> Submission Status</p>
+              {["Array", "String", "TwoPointer", "DP", "Graph"].map(skill => (
+                  <div key={skill}>
+                    <p className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>{skill}</p>
+                    <div className="progress rounded" style={{ height: '5px' }}>
+                      <div className="progress-bar" role="progressbar" style={{ width: `${skillsProgress[skill] || 0}%` }} aria-valuenow={skillsProgress[skill] || 0}
+                        aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
           <div className="col-lg-8">
-            <div className="card mb-4">
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-sm-3">
-                    <p className="mb-0">Full Name</p>
-                  </div>
-                  <div className="col-sm-9">
-                    <p className="text-muted mb-0">{`${user.firstname} ${user.lastname}`}</p>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-sm-3">
-                    <p className="mb-0">Email</p>
-                  </div>
-                  <div className="col-sm-9">
-                    <p className="text-muted mb-0">{user.email}</p>
+            <div className="row">
+              <div className="col-md-6">
+                <div className="card mb-4 mb-md-0 custom-height-card">
+                  <div className="card-body d-flex justify-content-center align-items-center">
+                    <div>
+                      <h5>Total Problems Solved</h5>
+                      <p>{totalProblemSolved()} / {problems.length}</p>
+                    </div>
                   </div>
                 </div>
-                <hr />
-                <div className="row">
-                  <div className="col-sm-3">
-                    <p className="mb-0">Phone</p>
-                  </div>
-                  <div className="col-sm-9">
-                    <p className="text-muted mb-0">(097) 234-5678</p>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-sm-3">
-                    <p className="mb-0">Mobile</p>
-                  </div>
-                  <div className="col-sm-9">
-                    <p className="text-muted mb-0">(098) 765-4321</p>
-                  </div>
-                </div>
-                <hr />
-                <div className="row">
-                  <div className="col-sm-3">
-                    <p className="mb-0">Address</p>
-                  </div>
-                  <div className="col-sm-9">
-                    <p className="text-muted mb-0">Bay Area, San Francisco, CA</p>
+              </div>
+
+              <div className="col-md-6">
+                <div className="card mb-4 mb-md-0">
+                  <div className="card-body">
+                    <p className="mb-4"><span className="text-primary font-italic me-1">assignment</span> Project Status</p>
+                    <p className="mb-1" style={{ fontSize: '.77rem' }}>Web Design</p>
+                    <div className="progress rounded" style={{ height: '5px' }}>
+                      <div className="progress-bar" role="progressbar" style={{ width: '80%' }} aria-valuenow="80"
+                        aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                   
                   </div>
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-md-6">
-                <div className="card mb-4 mb-md-0">
-                  <div className="card-body">
-                    <p className="mb-4"><span className="text-primary font-italic me-1">assignment</span> Project Status</p>
-                    <p className="mb-1" style={{ fontSize: '.77rem' }}>Web Design</p>
-                    <div className="progress rounded" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '80%' }} aria-valuenow="80"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>Website Markup</p>
-                    <div className="progress rounded" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '72%' }} aria-valuenow="72"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>One Page</p>
-                    <div className="progress rounded" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '89%' }} aria-valuenow="89"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>Mobile Template</p>
-                    <div className="progress rounded" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '55%' }} aria-valuenow="55"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>Backend API</p>
-                    <div className="progress rounded mb-2" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '66%' }} aria-valuenow="66"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+
+            <div className="row-header row custom-row-style">
+              <div className="col-6 col-md-2 p-3">
+                <div className="text-center">Status</div>
+              </div>
+              <div className="col-6 col-md-6 p-3">Title</div>
+              <div className="col-6 col-md-2 p-3">Difficulty</div>
+              <div className="col-6 col-md-2 p-3">Solution</div>
+            </div>
+
+            <div className="table">
+              {submitProblem.map((problem, index) => (
+                <div key={index} className={`row custom-row-style ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}>
+                  <div className="col-6 col-md-2 p-3 text-center">
+                      {getSubmissionStatus(problem._id)}
+                  </div>
+                  <div className={`col-6 col-md-6 p-3`}>
+                    <a
+                      className={`${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
+                      href="/problemset/problem"
+                      onClick={(event) => handleProblem(problem, event)}
+                    >
+                      {`${problem.code}. ${problem.title}`}
+                    </a>
+                  </div>
+                  <div className="col-6 col-md-2 p-3">
+                    {problem.difficulty || "medium"}
+                  </div>
+                  <div className="col-6 col-md-2 p-3">
+                    passed
                   </div>
                 </div>
-              </div>
-              <div className="col-md-6">
-                <div className="card mb-4 mb-md-0">
-                  <div className="card-body">
-                    <p className="mb-4"><span className="text-primary font-italic me-1">assignment</span> Project Status</p>
-                    <p className="mb-1" style={{ fontSize: '.77rem' }}>Web Design</p>
-                    <div className="progress rounded" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '80%' }} aria-valuenow="80"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>Website Markup</p>
-                    <div className="progress rounded" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '72%' }} aria-valuenow="72"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>One Page</p>
-                    <div className="progress rounded" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '89%' }} aria-valuenow="89"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>Mobile Template</p>
-                    <div className="progress rounded" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '55%' }} aria-valuenow="55"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <p className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>Backend API</p>
-                    <div className="progress rounded mb-2" style={{ height: '5px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ width: '66%' }} aria-valuenow="66"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> {/* end row */}
-          </div> {/* end col-lg-8 */}
-        </div> {/* end row */}
-      </div> {/* end container */}
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

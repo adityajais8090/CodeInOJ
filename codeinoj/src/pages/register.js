@@ -13,6 +13,7 @@ const Register = () =>{
     lastname : "",
     email : "",
     password : "",
+    role : "",
   });
 
   const handleInput = (e)=>{
@@ -99,6 +100,17 @@ const Register = () =>{
         name="password" 
         placeholder="Password" 
         value = {user.password}
+          onChange={handleInput}
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="exampleInputPassword1">Role</label>
+        <input type="role" 
+        className="form-control" 
+        id="exampleInputRole"  
+        name="role" 
+        placeholder="Role" 
+        value = {user.role}
           onChange={handleInput}
         />
       </div>

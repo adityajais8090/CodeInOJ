@@ -102,23 +102,23 @@ export const getProblemSet = async () => {
   }
 };
 
-export const getProblems = async (code) => {
-    try {
-      const response = await axios.get(`${API_URL}/problemset/problem`, {
-        params: { code },
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      
-      console.log("Response from getProblems :", response.data);
-      return response.data;
-    } catch (err) {
-      console.log("Error in getting problems", err);
-      return err;
-    }
+export const getProblems = async (ObjectId) => {
+  try {
+    const response = await axios.get(`${API_URL}/problemset/problem`, {
+      params: { id: ObjectId },
+      withCredentials: true, // Ensure credentials are sent with the request if needed
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("Response from getProblems:", response.data);
+    return response.data.existProblem;
+  } catch (error) {
+    console.error("Error in getting problems:", error);
+    throw error; // Rethrow the error to handle it further up the call chain
   }
+};
 
 export const getTestCases = async(code) => {
     try{
@@ -201,8 +201,84 @@ export const getTestCases = async(code) => {
       return data;
   } catch (error) {
       console.log(error.response);
+      throw error.response;
   }
   }
+
+  export const postSubmissions = async (submitload) => {
+    try{
+      const response = await axios.post('http://localhost:8000/submit', submitload, {
+        withCredentials : true,
+        headers: {
+          "Content-Type": "application/json",
+      },
+      });
+      return response;
+    }catch(error){
+      console.log(error.response);
+    }
+  }
+
+  export const getSubmitResult = async(payload1) => {
+    try{
+      const { data } = await axios.post('http://localhost:5000/submit', payload1, {
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    console.log("here is api data :", data);
+    return data;
+
+    }catch(error){
+      console.log("Error is from api submit : " , error.response);
+      throw error.response;
+    }
+  };
+
+  export const createContest = async(contestData) => {
+    try{
+      const response = await axios.post(`${API_URL}/create/contest`, contestData , {
+        withCredentials: true,
+          headers: {
+              "Content-Type": "application/json",
+          },
+      });
+      return response.data;
+    }catch(error){
+      console.log("Error in createContest : " , error);
+    }
+  }
+
+  export const getAllContest = async () => {
+    try{
+      const response = await axios.get(`${API_URL}/contests/contest`, {
+        withCredentials: true,
+          headers: {
+              "Content-Type": "application/json",
+          },
+      });
+      return response.data;
+
+    }catch(error){
+      console.log("Error in get all Contest : " , error);
+    }
+  }
+
+  export const addProblemContest = async (payload) => {
+    try {
+        const response = await axios.post(`${API_URL}/update/contest`, payload, {
+            withCredentials: true,
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error adding problem in contest:", error);
+        throw error; // Optionally, throw the error for handling in the calling code
+    }
+};
+
   
 
 

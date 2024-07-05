@@ -4,6 +4,7 @@ import Profile from './profile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPenNib, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { getProblemSet, uploadProblem, deleteProblem, updateProblem, getTestCases} from '../service/api';
+import AdminContest from '../component/AdminContest';
 
 const Admin = () => {
   const [problems, setProblems] = useState([]);
@@ -43,6 +44,10 @@ const Admin = () => {
 
   const handleProfile = () => {
     setActiveSection('profile');
+  };
+
+  const handleContest = () => {
+    setActiveSection('contest');
   };
 
   const handleInput = (e) => {
@@ -188,6 +193,11 @@ const Admin = () => {
                 Profile
               </button>
             </div>
+            <div className="p-3">
+              <button className="btn btn-link" onClick={handleContest} style={{ textDecoration: 'none', color: 'inherit' }}>
+                Contest
+              </button>
+            </div>
           </div>
 
           <div className="col-sm-9">
@@ -269,6 +279,10 @@ const Admin = () => {
             {activeSection === 'profile' && (  
            <Profile/>  
             )}
+             {activeSection === 'contest' && (  
+           <AdminContest/>  
+            )}
+
           </div>
         </div>
       </div>

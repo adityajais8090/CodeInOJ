@@ -1,74 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import '../styles/home.css';
-import { getProblemSet } from '../service/api';
-
+import ContestCard from '../component/ContestCard';
+import { getAllContest } from '../service/api';
 
 const Home = () => {
-  const navigate = useNavigate();
-  const [problems, setProblems] = useState([]);
+  const [allContest, setAllContest] = useState([]);
+
+  const fetchData = async () => {
+    try {
+        const response = await getAllContest();
+        console.log("Here is my get contest:", response.data);
+        setAllContest(response.data);
+    } catch (error) {
+        console.log("Error in fetching data:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getProblemSet();
-        console.log("Response from Home:", response);
-        setProblems(response);
-      } catch (error) {
-        console.error('Error fetching problems:', error);
-      }
-    };
     fetchData();
   }, []);
 
-  const handleProblem = (problem, event) => {
-    event.preventDefault();
-    navigate(`/problemset/problem/${problem.code}`);
+  const calculateDaysLeft = (startTime) => {
+    const currentDate = new Date();
+    const startDate = new Date(startTime);
+    const timeDiff = startDate - currentDate;
+    const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return daysLeft;
   };
 
   return (
     <>
-      <div className="row-header row custom-row-style">
-        <div className="col-6 col-md-2 p-3">
-          <div className="text-center">
-            Status
-          </div>
+      <div className="container mt-5 mb-3">
+        <div className="row">
+          {allContest.map((contest, index) => (
+            <ContestCard
+              key={index}
+              iconClass="bx bxl-mailchimp" // Example icon class, you can change this based on your requirements
+              contestType="Contest"
+              daysLeft={calculateDaysLeft(contest.startTime)}
+              rating="0" // Set the initial rating or pass the actual rating if available
+              title={contest.title}
+              contestCode = {contest.contestCode}
+              progress={0} // Set initial progress
+              applied={0} // Initial participant count
+              capacity={contest.capacity} // Assuming 'capacity' is part of your contest data
+            />
+          ))}
         </div>
-        <div className="col-6 col-md-6 p-3">
-          Title
-        </div>
-        <div className="col-6 col-md-2 p-3">
-          Difficulty
-        </div>
-        <div className="col-6 col-md-2 p-3">
-          Solution
-        </div>
-      </div>
-      
-      <div className="table">
-        {problems.map((problem, index) => (
-          
-          <div key={index} className={`row custom-row-style ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}>
-            <div className="col-6 col-md-2 p-3 text-center">
-              {problem.status || "pending"}
-            </div>
-            <div className={`col-6 col-md-6 p-3`}>
-              <a
-                className={`${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
-                href="/problemset/problem"
-                onClick={(event) => handleProblem(problem, event)}
-              >
-                {`${problem.code}. ${problem.title}`}
-              </a>
-            </div>
-            <div className="col-6 col-md-2 p-3">
-              {problem.difficulty || "medium"}
-            </div>
-            <div className="col-6 col-md-2 p-3">
-              {problem.solution || "try once"}
-            </div>
-          </div>
-        ))}
       </div>
     </>
   );

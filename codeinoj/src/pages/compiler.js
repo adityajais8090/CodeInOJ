@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import '../styles/compiler.css';
-import { runOutput, getTestCases } from '../service/api';
+import { runOutput, getTestCases, postSubmissions, getSubmitResult } from '../service/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExpand, faPlay, faUpload } from '@fortawesome/free-solid-svg-icons';
 import 'codemirror/lib/codemirror.css';
@@ -32,6 +32,9 @@ const Compiler = ({ problem }) => {
     const [results, setResults] = useState([]);
     const [totalTestCases, setTotalTestCases] = useState(0);
     const [currentTestCase, setCurrentTestCase] = useState(0);
+    const [stderr, setStderr] = useState('');
+    const [wrongOutput, setWrongOutput] = useState(false);
+    
 
     useEffect(() => {
         const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
@@ -76,44 +79,62 @@ const Compiler = ({ problem }) => {
         try {
             const { existTestcase } = await getTestCases(problem.code);
             setTotalTestCases(existTestcase.length);
-            let results = [];
-
-            for (let i = 0; i < existTestcase.length; i++) {
-                const input = existTestcase[i].input;
+            setActiveSection('TestResult');
+            let result = [];
+            let count = 0;
+            try {
                 const payload = {
-                    language: 'cpp',
+                    language : 'cpp',
                     code,
-                    input,
-                };
-
-                try {
-                    const response = await runOutput(payload);
-                    const output = response.output;
-                    results.push({
-                        input: existTestcase[i].input,
-                        output: existTestcase[i].output,
-                        yourOutput: output,
-                        success: output === existTestcase[i].output,
-                    });
-                } catch (err) {
-                    console.log("Error executing test case:", err);
-                    results.push({
-                        input: existTestcase[i].input,
-                        output: existTestcase[i].output,
-                        yourOutput: "Error",
-                        success: false,
-                    });
+                    testcases : existTestcase,
                 }
-
-                setResults([...results]); // Update results state with each test case
-                setCurrentTestCase(i + 1); // Update current test case count
+                 const response = await getSubmitResult(payload);
+                 console.log("Here is my submission response :", response);
+                   count = response.count;
+                   if (response.failedTestcase) {
+                    result.push(response.failedTestcase)
+                    setResults(result);
+                } else {
+                    setResults([]);
+                }
+                   setCurrentTestCase(count);
+                  
+                setStderr('');
+            } catch (error) {
+                console.log("Error running code:", error);
+                setStderr(error.data.error.stderr || error.message || "Unknown error occurred"); 
             }
 
-            console.log("All test cases completed.");
+            console.log("currTestcase :", currentTestCase);
+            console.log("here is Results :", results);
+        
+
+            if(count === existTestcase.length){
+                setWrongOutput(false);
+                const submitload = {
+                    problemId : problem._id,
+                    code,
+                    status : "passed",
+                }
+                const response = await postSubmissions(submitload);
+                console.log("submissions res :", response);
+            }else{
+                setWrongOutput(true);
+                const submitload = {
+                    problemId : problem._id,
+                    code,
+                    status : "failed",
+                }
+                const response = await postSubmissions(submitload);
+                console.log("submissions res :", response);
+            }
+
         } catch (err) {
             console.log("Error fetching test cases:", err);
+            setStderr(err.message || "Unknown error occurred"); // Set stderr state
         }
     };
+    
 
     const handleRun = async () => {
         const payload = {
@@ -121,12 +142,15 @@ const Compiler = ({ problem }) => {
             code,
             input,
         };
-
         try {
             const response = await runOutput(payload);
+            console.log("Here is my response :" , response);
             setOutput(response.output);
-        } catch (err) {
-            console.log("Error running code:", err);
+            setStderr('');
+        } catch (error) {
+            console.log("Error running code:", error.data);
+            setStderr(error.data.error.stderr || error.message || "Unknown error occurred"); 
+            console.log("here is my stderr :", stderr);
         }
     };
 
@@ -176,6 +200,7 @@ const Compiler = ({ problem }) => {
                                 <button type="button" className={`btn btn-outline-secondary ${activeSection === 'TestCase' ? 'active' : ''}`} onClick={handleTestCase}>
                                     TestCase
                                 </button>
+                                <span>   </span>
                                 <button type="button" className={`btn btn-outline-secondary ${activeSection === 'TestResult' ? 'active' : ''}`} onClick={handleTestResult}>
                                     TestResult
                                 </button>
@@ -204,8 +229,11 @@ const Compiler = ({ problem }) => {
                                     </div>
                                 </form>
                             )}
+
                             {activeSection === 'TestCase' && (
-                                <form>
+                               <>
+                                {!stderr ? (
+                                    <form>
                                     <div className="form-group mb-0">
                                         <label htmlFor="output">Output</label>
                                         <div className="input-group">
@@ -227,22 +255,58 @@ const Compiler = ({ problem }) => {
                                         </div>
                                     </div>
                                 </form>
-                            )}
-                            {activeSection === 'TestResult' && (
-                                <div>
-                                    <h4>Test Result</h4>
-                                    <p>{currentTestCase} / {totalTestCases} Test Cases</p>
-                                    {results.map((result, index) => (
-                                        <div key={index} className="mb-3">
-                                            <h6>Test Case {index + 1}</h6>
-                                            <p>Input: {result.input}</p>
-                                            <p>Expected Output: {result.output}</p>
-                                            <p>Your Output: {result.yourOutput}</p>
-                                            <p>Status: {result.success ? 'Passed' : 'Failed'}</p>
+                                ):(
+                                    <form>
+                                    <div className="form-group mb-0">
+                                        <label htmlFor="output">Error</label>
+                                        <div className="input-group">
+                                            <textarea
+                                                className={`form-control expanding-textarea ${outputExpanded ? 'expanded' : ''}`}
+                                                id="output"
+                                                value={stderr}
+                                                readOnly
+                                                rows={outputExpanded ? "10" : "1"}
+                                                aria-label="Output Text"
+                                            ></textarea>
+                                            <button
+                                                className="btn btn-outline-secondary"
+                                                type="button"
+                                                onClick={handleExpandOutput}
+                                            >
+                                                <FontAwesomeIcon icon={faExpand} />
+                                            </button>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                </form>
+                                )}
+                                </>
                             )}
+
+
+                            {activeSection === 'TestResult' && (
+                               <>
+                               <div>
+                                   <h4>Test Result</h4>
+                                   <p>{currentTestCase} / {totalTestCases} Test Cases</p>
+                           
+                                   {currentTestCase === totalTestCases ? (
+                                       <p>Successfully Submitted</p>
+                                   ) : (
+                                       wrongOutput && results.length > 0 && (
+                                           <div className="mb-3">
+                                               <h6>Test Case {currentTestCase}</h6>
+                                               <p>Input: {results[0].input}</p>
+                                               <p>Expected Output: {results[0].expectedOutput}</p>
+                                               <p>Your Output: {results[0].yourOutput}</p>
+                                               <p>Status: Failed</p>
+                                           </div>
+                                       )
+                                   )}
+                               </div>
+                           </>
+                           
+                            )}
+
                         </div>
                     </div>
                 </div>
