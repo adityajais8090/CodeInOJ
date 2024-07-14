@@ -205,19 +205,53 @@ export const getTestCases = async(code) => {
   }
   }
 
+
   export const postSubmissions = async (submitload) => {
-    try{
-      const response = await axios.post('http://localhost:8000/submit', submitload, {
-        withCredentials : true,
-        headers: {
+    try {
+        const response = await axios.post(`${API_URL}/submit`, submitload, {
+            withCredentials: true,
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        return response;
+    } catch (error) {
+        console.log("Axios error:", error);
+        throw error; // Re-throw the error to handle it in the calling function
+    }
+}
+
+ export const getSubmission = async (user) => {
+  try{
+    const response = await axios.post(`${API_URL}/getallSubmit`, user , {
+      withCredentials: true,
+      headers: {
           "Content-Type": "application/json",
       },
-      });
-      return response;
-    }catch(error){
-      console.log(error.response);
-    }
+  });
+  return response;
+  }catch(error){
+    console.log("Axios getSubmission :", error);
+    throw error;
   }
+ }
+
+ export const getAllSubmissions = async (user) => {
+  try{
+    const response = await axios.post(`${API_URL}/all/submissions`, user , {
+      withCredentials: true,
+      headers: {
+          "Content-Type": "application/json",
+      },
+  });
+  console.log( "ALL Submission Response : ", response);
+    return response.data;
+  }catch(error){
+    console.log("Axios getAllSubmission :", error);
+    throw error;
+  }
+ }
+
 
   export const getSubmitResult = async(payload1) => {
     try{
@@ -233,7 +267,7 @@ export const getTestCases = async(code) => {
       console.log("Error is from api submit : " , error.response);
       throw error.response;
     }
-  };
+  }
 
   export const createContest = async(contestData) => {
     try{
@@ -278,6 +312,22 @@ export const getTestCases = async(code) => {
         throw error; // Optionally, throw the error for handling in the calling code
     }
 };
+
+
+export const sendRatings = async(payload) => {
+  try{
+    const response = await axios.post(`${API_URL}/contest/complete`, payload, {
+      withCredentials: true,
+      headers: {
+          "Content-Type": "application/json",
+      },
+    })
+     return response;
+  }catch(error){
+    console.error("Error adding rating in contest:", error);
+        throw error; // Optionally, throw the error for handling in the calling code
+  }
+}
 
   
 

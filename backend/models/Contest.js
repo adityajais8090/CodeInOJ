@@ -1,5 +1,17 @@
 import mongoose from 'mongoose';
 
+const ratingSchema = new mongoose.Schema({
+    userId : {
+        type : String,
+        required : true,
+    },
+    contestRating : {
+        type : Number,
+        required : true,
+    }
+
+});
+
 const contestSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -25,7 +37,8 @@ const contestSchema = new mongoose.Schema({
     },
      problemId : {
         type : [String],
-    }
+    },
+    participants : [ratingSchema],
 });
 
 // export mongoose model

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import '../styles/compiler.css';
+import UserContext from '../context/user/userContext';
 import { runOutput, getTestCases, postSubmissions, getSubmitResult } from '../service/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExpand, faPlay, faUpload } from '@fortawesome/free-solid-svg-icons';
@@ -11,16 +12,8 @@ import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
 import CodeMirror from 'codemirror';
 
-const Compiler = ({ problem }) => {
-    const initialCode = `// Your First C++ Program
-        #include <bits/stdc++.h>
-        using namespace std;
-
-        int main(){
-            cout << "Hello World !";
-            return 0;
-        }
-    `;
+const Compiler = ({ problem, initialCode }) => {
+    
 
     const [inputExpanded, setInputExpanded] = useState(false);
     const [outputExpanded, setOutputExpanded] = useState(false);
@@ -34,6 +27,8 @@ const Compiler = ({ problem }) => {
     const [currentTestCase, setCurrentTestCase] = useState(0);
     const [stderr, setStderr] = useState('');
     const [wrongOutput, setWrongOutput] = useState(false);
+
+    const { user, fetchUserProfile } = useContext(UserContext);
     
 
     useEffect(() => {
@@ -76,64 +71,72 @@ const Compiler = ({ problem }) => {
     };
 
     const handleSubmit = async () => {
+        let startTime, endTime;
+    
         try {
             const { existTestcase } = await getTestCases(problem.code);
             setTotalTestCases(existTestcase.length);
             setActiveSection('TestResult');
-            let result = [];
-            let count = 0;
+    
+            startTime = Date.now();
+    
+            const payload = {
+                language: 'cpp',
+                code,
+                testcases: existTestcase,
+                timelimit: problem.timelimit,
+                memorylimit: problem.memorylimit,
+            };
+    
             try {
-                const payload = {
-                    language : 'cpp',
-                    code,
-                    testcases : existTestcase,
+                const response = await getSubmitResult(payload);
+                console.log("Here is my submission response:", response);
+    
+                let result = [];
+                if (response.failedTestcase) {
+                    result.push(response.failedTestcase);
                 }
-                 const response = await getSubmitResult(payload);
-                 console.log("Here is my submission response :", response);
-                   count = response.count;
-                   if (response.failedTestcase) {
-                    result.push(response.failedTestcase)
-                    setResults(result);
-                } else {
-                    setResults([]);
-                }
-                   setCurrentTestCase(count);
-                  
+                setResults(result);
+                setCurrentTestCase(response.count);
                 setStderr('');
+    
+                console.log("currTestcase :", response.count);
+                console.log("here is Results :", result);
+    
+                endTime = Date.now();
+                const runtime = (endTime - startTime); // Calculate runtime in seconds
+    
+                if (response.count === existTestcase.length) {
+                    setWrongOutput(false);
+                    await postSubmissionStatus('passed', runtime);
+                } else {
+                    setWrongOutput(true);
+                    await postSubmissionStatus('failed', runtime);
+                }
             } catch (error) {
-                console.log("Error running code:", error);
-                setStderr(error.data.error.stderr || error.message || "Unknown error occurred"); 
+                console.error("Error running code:", error);
+                setStderr(error?.data?.error?.stderr || error.message || "Unknown error occurred");
             }
-
-            console.log("currTestcase :", currentTestCase);
-            console.log("here is Results :", results);
-        
-
-            if(count === existTestcase.length){
-                setWrongOutput(false);
-                const submitload = {
-                    problemId : problem._id,
-                    code,
-                    status : "passed",
-                }
-                const response = await postSubmissions(submitload);
-                console.log("submissions res :", response);
-            }else{
-                setWrongOutput(true);
-                const submitload = {
-                    problemId : problem._id,
-                    code,
-                    status : "failed",
-                }
-                const response = await postSubmissions(submitload);
-                console.log("submissions res :", response);
-            }
-
         } catch (err) {
-            console.log("Error fetching test cases:", err);
-            setStderr(err.message || "Unknown error occurred"); // Set stderr state
+            console.error("Error fetching test cases:", err);
+            setStderr(err.message || "Unknown error occurred");
         }
     };
+    
+    const postSubmissionStatus = async (status, runtime) => {
+        const submitload = {
+            problemId: problem._id,
+            problemCode: code,
+            runtimeSub: runtime,
+            languageSub: 'cpp',
+            isPassed: status === 'passed',
+           
+        };
+        console.log( "DataSubmit : ", submitload );
+        const response = await postSubmissions(submitload);
+        console.log("submissions res :", response);
+    };
+    
     
 
     const handleRun = async () => {
@@ -149,7 +152,7 @@ const Compiler = ({ problem }) => {
             setStderr('');
         } catch (error) {
             console.log("Error running code:", error.data);
-            setStderr(error.data.error.stderr || error.message || "Unknown error occurred"); 
+            setStderr(error.data.error || error.message || "Unknown error occurred"); 
             console.log("here is my stderr :", stderr);
         }
     };
@@ -256,28 +259,30 @@ const Compiler = ({ problem }) => {
                                     </div>
                                 </form>
                                 ):(
-                                    <form>
-                                    <div className="form-group mb-0">
-                                        <label htmlFor="output">Error</label>
-                                        <div className="input-group">
-                                            <textarea
-                                                className={`form-control expanding-textarea ${outputExpanded ? 'expanded' : ''}`}
-                                                id="output"
-                                                value={stderr}
-                                                readOnly
-                                                rows={outputExpanded ? "10" : "1"}
-                                                aria-label="Output Text"
-                                            ></textarea>
-                                            <button
-                                                className="btn btn-outline-secondary"
-                                                type="button"
-                                                onClick={handleExpandOutput}
-                                            >
-                                                <FontAwesomeIcon icon={faExpand} />
-                                            </button>
-                                        </div>
+                                <form>
+                                <div className="form-group mb-0">
+                                    <label htmlFor="output" style={{ color: 'red' }}>Error</label>
+                                    <div className="input-group">
+                                        <textarea
+                                            className={`form-control expanding-textarea ${outputExpanded ? 'expanded' : ''}`}
+                                            id="output"
+                                            value={stderr}
+                                            readOnly
+                                            rows={outputExpanded ? "10" : "1"}
+                                            aria-label="Output Text"
+                                            style={{ borderColor: 'red' }} // Optionally set text and border color to red
+                                        ></textarea>
+                                        <button
+                                            className="btn btn-outline-secondary"
+                                            type="button"
+                                            onClick={handleExpandOutput}
+                                        >
+                                            <FontAwesomeIcon icon={faExpand} />
+                                        </button>
                                     </div>
-                                </form>
+                                </div>
+                            </form>
+
                                 )}
                                 </>
                             )}

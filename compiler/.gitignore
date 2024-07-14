@@ -1,2 +1,7 @@
+.dockerignore
 .env
+Dockerfile
 node_modules
+inputs
+outputs
+codes

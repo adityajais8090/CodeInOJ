@@ -1,48 +1,54 @@
 const fs = require('fs');
 const path = require('path');
-const {v4 : uuid} = require('uuid');
-const {exec} = require('child_process');
+const { v4: uuid } = require('uuid');
+const { exec } = require('child_process');
 
-const outputPath = path.join(__dirname , "outputs"); 
+const outputPath = path.join(__dirname, "outputs");
 
-
-// check if dir is exist , we don't need to create that
-if(!fs.existsSync(outputPath)){
-    fs.mkdir(outputPath , {recursive : true }, (error)=>{
-        console.log("error in making directory : ", error);
+// Check if directory exists, if not create it
+if (!fs.existsSync(outputPath)) {
+    fs.mkdir(outputPath, { recursive: true }, (error) => {
+        console.log("Error in making directory: ", error);
     });
-    console.log("Directory form Successfully!")
+    console.log("Directory created successfully!");
 }
 
-
-const executeCpp = ( filepath, inputPath ) =>{
-  
+const executeCpp = (filepath, inputPath, timeLimit, memoryLimit) => {
     const jobID = path.basename(filepath).split(".")[0];
     console.log(jobID);
-    const filename = `${jobID}.exe`;
+    const filename = `${jobID}.out`;
     const outpath = path.join(outputPath, filename);
-    
     console.log(outpath);
-    
 
-
-    return new Promise ( (resolve,reject) =>{
-      const command = `g++ ${filepath} -o ${outpath} && cd ${outputPath} && .\\${filename} < ${inputPath}`;
-        exec(command,
-        (error, stdout, stderr) => {
-          if(error){
-             reject(error);
+    return new Promise((resolve, reject) => {
+        const command = `g++ ${filepath} -o ${outpath} && cd ${outputPath} && ./${filename} < ${inputPath}`;
+        const child = exec(command, { timeout: timeLimit*60 }, (error, stdout, stderr) => {
+            if (error) {
+                if (error.killed) {
+                    return reject(new Error("Time Limit Exceeded"));
+                }
+                return reject(error);
             }
-          if(stderr){ 
-            reject(error);
-          }
-          resolve(stdout);
-        }
-      );
-    });
+            if (stderr) {
+                return reject(new Error(stderr));
+            }
+            resolve(stdout);
+        });
 
+        // Kill the process if it exceeds the time limit
+        const timer = setTimeout(() => {
+            child.kill();
+        }, timeLimit*60);
+
+        child.on('exit', (code, signal) => {
+            clearTimeout(timer);
+            if (signal === 'SIGTERM') {
+                return reject(new Error("Time Limit Excded"));
+            }
+        });
+    });
 }
 
-module.exports = { 
+module.exports = {
     executeCpp,
 }

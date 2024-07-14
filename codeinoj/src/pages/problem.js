@@ -1,19 +1,37 @@
 import '../styles/problem.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import UserContext from '../context/user/userContext';
 import { useParams } from 'react-router-dom';
 import { getTestCases } from '../service/api';
 import Compiler from './compiler';
+import { DescriptionCard, SubmissionCard, AllSubmissionsCard, EditorialCard } from '../component';
 
 const Problem = () => {
   const { code } = useParams();
+  const { user, fetchUserProfile } = useContext(UserContext);
+
+  const initialCode = `// Your First C++ Program
+    #include <bits/stdc++.h>
+    using namespace std;
+
+    int main(){
+        cout << "Hello World !";
+        return 0;
+    }
+  `;
+
   const [problem, setProblem] = useState({
     code: "",
     title: "",
     description: "",
-    constraints : [""],
+    constraints: [""],
     tags: [""],
-    testcaseId : [""],
+    testcaseId: [""],
+    timelimit: 0,
+    memorylimit: 0,
+    difficulty: "",
   });
+
   const [testcases, setTestcases] = useState({
     input1: '',
     output1: '',
@@ -21,10 +39,15 @@ const Problem = () => {
     output2: '',
   });
 
+  const [showDescription, setShowDescription] = useState(true);
+  const [showSubmission, setShowSubmission] = useState(false);
+  const [showEditorial, setShowEditorial] = useState(false);
+  const [showAllSubmissions, setShowAllSubmissions] = useState(false);
+
   useEffect(() => {
     const fetchTestCases = async () => {
       try {
-        const response = await getTestCases(code); // Use `problem.code` for fetching test cases
+        const response = await getTestCases(code);
         if (response.success) {
           setTestcases({
             input1: response.testcases[0].input,
@@ -39,65 +62,66 @@ const Problem = () => {
       }
     };
 
-    fetchTestCases(); // Call the function to fetch test cases on component mount
-  }, [code]); // Add `problem.code` to the dependencies array
+    if (!user) {
+      fetchUserProfile();
+    }
+    fetchTestCases();
+  }, [user, fetchUserProfile, code]);
+
+  const handleDescriptionClick = () => {
+    setShowDescription(true);
+    setShowSubmission(false);
+    setShowEditorial(false);
+    setShowAllSubmissions(false);
+  };
+
+  const handleSubmissionClick = () => {
+    setShowDescription(false);
+    setShowSubmission(true);
+    setShowEditorial(false);
+    setShowAllSubmissions(false);
+  };
+
+  const handleEditorialClick = () => {
+    setShowDescription(false);
+    setShowSubmission(false);
+    setShowEditorial(true);
+    setShowAllSubmissions(false);
+  };
+
+  const handleAllSubmissionsClick = () => {
+    setShowDescription(false);
+    setShowSubmission(false);
+    setShowEditorial(false);
+    setShowAllSubmissions(true);
+  };
 
   return (
-    <div className="Problem" style={{ backgroundColor: '#eee' }}>
-      <div className="container-fluid py-2">
-        <div className="row">
+    <div className="Problem" style={{ backgroundColor: '#eee', minHeight: '120vh' }}>
+      <div className="container-fluid py-2 h-100">
+        <div className="row h-100 ">
           {/* Problem card */}
-          <div className="col-lg-5">
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">{`${problem.code}. ${problem.title}`}</h5>
-                <div className="mb-3">
-                    <p className="card-text">{problem.description.split('\n').map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        <br />
-                      </span>
-                    ))}</p>
-                  </div>
-
-
-                <div className="mb-3">
-                  <h5 className="card-subtitle mb-2 text-muted">Test Case 1</h5>
-                  <p className="card-text">
-                    <strong>Input:</strong> {testcases.input1}<br />
-                    <strong>Output:</strong> {testcases.output1}
-                  </p>
-                </div>
-                <div className="mb-3">
-                  <h5 className="card-subtitle mb-2 text-muted">Test Case 2</h5>
-                  <p className="card-text">
-                    <strong>Input:</strong> {testcases.input2}<br />
-                    <strong>Output:</strong> {testcases.output2}
-                  </p>
-                </div>
-                <div>
-                  <h5 className="card-subtitle mb-2 text-muted">Constraints</h5>
-                  <ul className="card-text">
-                    {problem.constraints.map((constraint, index) => (
-                      <li key={index}>{constraint}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h5 className="card-subtitle mb-2 text-muted">Tags</h5>
-                  <p className="card-text">{problem.tags && problem.tags.join(', ')}</p>
-                </div>
-              </div>
+          <div className="col-lg-5 d-flex flex-column" style={{ maxHeight: '100vh', overflowY: 'auto', backgroundColor: '#eee' }}>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <button type="button" className={`btn ${showDescription ? 'btn-primary' : 'btn-light'} flex-grow-1`} onClick={handleDescriptionClick}>Description</button>
+              <button type="button" className={`btn ${showSubmission ? 'btn-primary' : 'btn-light'} flex-grow-1`} onClick={handleSubmissionClick}>Submission</button>
+              <button type="button" className={`btn ${showEditorial ? 'btn-primary' : 'btn-light'} flex-grow-1`} onClick={handleEditorialClick}>Editorial</button>
+              <button type="button" className={`btn ${showAllSubmissions ? 'btn-primary' : 'btn-light'} flex-grow-1`} onClick={handleAllSubmissionsClick}>All Submission</button>
             </div>
+
+            {/* Conditionally render cards based on button click */}
+            {showDescription && <DescriptionCard problem={problem} testcases={testcases} />}
+            {showSubmission && <SubmissionCard problemId={problem._id} userId={user._id} />}
+            {showEditorial && <EditorialCard problem={problem} />}
+            {showAllSubmissions && <AllSubmissionsCard problemId={problem._id} />}
           </div>
 
           {/* Compiler card */}
-          <div className="col-lg-7">
+          <div className="col-lg-7" style={{ maxHeight: '100vh', overflowY: 'auto',  backgroundColor: '#eee' }}>
             <div className="card h-100">
               <div className="card-body">
                 <h5 className="card-title">Compiler</h5>
-                <Compiler problem={problem}/>
+                <Compiler problem={problem} initialCode={initialCode} />
               </div>
             </div>
           </div>

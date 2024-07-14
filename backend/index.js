@@ -1,6 +1,6 @@
 import express from 'express';
 import DBconnection from './database/db.js';
-import {User, Problem, TestCases, Contest } from './models/index.js';
+import {User, Problem, TestCases, Contest, Submission } from './models/index.js';
 
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -34,7 +34,6 @@ app.get("/", (req,res)=>{
 
 //http method post for register because i have to post data
 app.post("/register", async (req,res)=>{
-    console.log(req);
     try{
         // get all the data from request body
         //destructure at once from req
@@ -73,7 +72,8 @@ app.post("/register", async (req,res)=>{
 
         res.status(201).json({
             message : "YOU have successfully registerd !",
-            user
+            user,
+            success : true,
         });
 
     }catch(err){
@@ -202,9 +202,11 @@ app.post("/profile/add", authAdmin , async(req,res)=>{
     try{
         console.log(req.body);
          // get problem and test cases
-        const {title, description, constraints, tags, input1 , output1, input2, output2} = req.body;
+        const {title, description, constraints, tags, input1 , 
+            output1, input2, output2, timelimit, memorylimit, difficulty} = req.body;
         //check all data should be correct and exist
-        if(!(title && description && constraints && tags && input1 && output1 && input2 && output2)){
+        if(!(title && description && constraints && tags && 
+            input1 && output1 && input2 && output2 && timelimit && memorylimit && difficulty)){
             return res.status(400).send("Complete all the details");
         }
         //check that problem should be unique
@@ -223,6 +225,9 @@ app.post("/profile/add", authAdmin , async(req,res)=>{
           constraints,
           tags,
           code,
+          timelimit,
+          memorylimit,
+          difficulty,
         });
        // store the sample test cases
         const testcases1 = await TestCases.create({
@@ -258,80 +263,57 @@ app.post("/profile/add", authAdmin , async(req,res)=>{
     }
 })
 
-app.post("/profile/add/testcases", async(req, res) => {
-  const { inputTestcases, outputTestcases, code } = req.body;
-  if (!(inputTestcases && outputTestcases && code)) {
-      return res.status(404).json({
-          message: "Fill all the details",
-          success: false,
-      });
-  }
-  const existProblem = await Problem.findOne({code});
-  const existTestcases = await TestCases.findOne({ code });
-  if (!(existTestcases && existProblem)) {
-      return res.status(404).json({
-          message: "Sample TestCases do not exist",
-          success: false,
-      });
-  }
-
-  function extractTestCases(existTestcases, inputTestcases, outputTestcases) {
-      // Determine the number of lines per test case from the existing test cases
-      let linesPerTestCaseInput = existTestcases.input.split('\n').length;
-      let linesPerTestCaseOutput = existTestcases.output.split('\n').length;
-
-      // Split the input and output strings into lines
-      let inputLines = inputTestcases.trim().split('\n');
-      let outputLines = outputTestcases.trim().split('\n');
-
-      // Check if input and output test cases are in the correct proportion
-      if (inputLines.length % linesPerTestCaseInput !== 0 || outputLines.length % linesPerTestCaseOutput !== 0) {
-          throw new Error("Input and output test cases are not in the correct proportion as defined by existTestcases.");
-      }
-
-      // Extract input and output test cases based on the detected number of lines
-      let inputTestCases = [];
-      for (let i = 0; i < inputLines.length; i += linesPerTestCaseInput) {
-          let inputTestCase = inputLines.slice(i, i + linesPerTestCaseInput).join('\n');
-          inputTestCases.push(inputTestCase);
-      }
-
-      let outputTestCases = [];
-      for (let i = 0; i < outputLines.length; i += linesPerTestCaseOutput) {
-          let outputTestCase = outputLines.slice(i, i + linesPerTestCaseOutput).join('\n');
-          outputTestCases.push(outputTestCase);
-      }
-
-      return { inputTestCases, outputTestCases };
-  }
-
-  try {
-      const { inputTestCases, outputTestCases } = extractTestCases(existTestcases, inputTestcases, outputTestcases);
-
-      // Store the extracted test cases in the database
-      for (let i = 0; i < inputTestCases.length; i++) {
-          let newTestCase = new TestCases({
-              input: inputTestCases[i],
-              output: outputTestCases[i],
-              code: code,
-              problemtitle : existProblem.title,
-              problemId : existProblem._id,
-          });
-          console.log("Here is my testcases :", newTestCase);
-          await newTestCase.save();
-      }
-
-      return res.status(200).json({
-          message: "Test cases added successfully",
-          success: true,
-      });
-  } catch (error) {
+app.post("/profile/add/testcases", async (req, res) => {
+    const { inputTestcases, outputTestcases, code } = req.body;
+  
+    // Check if all required fields are provided
+    if (!(inputTestcases && outputTestcases && code)) {
       return res.status(400).json({
-          message: error.message,
-          success: false,
+        message: "Fill all the details",
+        success: false,
       });
-  }
-});
+    }
+  
+    try {
+      // Find the problem and test cases by code
+      const existProblem = await Problem.findOne({ code });
+      const existTestcases = await TestCases.findOne({ code });
+  
+      // Check if the problem and test cases exist
+      if (!(existTestcases && existProblem)) {
+        return res.status(404).json({
+          message: "Sample TestCases or Problem do not exist",
+          success: false,
+        });
+      }
+  
+      // Create new test cases
+      let newTestCase = new TestCases({
+        input: inputTestcases,
+        output: outputTestcases,
+        code: code,
+        problemtitle: existProblem.title,
+        problemId: existProblem._id,
+      });
+  
+      console.log("Here are the test cases:", newTestCase);
+  
+      // Save the new test cases
+      await newTestCase.save();
+  
+      return res.status(200).json({
+        message: "Test cases added successfully",
+        success: true,
+      });
+    } catch (error) {
+      // Handle any errors that occur
+      return res.status(500).json({
+        message: error.message,
+        success: false,
+      });
+    }
+  });
+  
 
 
 app.post("/problem/edit", authAdmin, async (req, res) => {
@@ -518,39 +500,92 @@ app.delete("/problemset/problem/delete", authAdmin, async (req, res) => {
 });
 
 app.post("/submit", auth, async (req, res) => {
-    const { problemId, code, status } = req.body;
+  const { problemId, problemCode, runtimeSub, languageSub, isPassed } = req.body;
+    const user = req.user;
+     
+  // Check if all required fields are provided
+  if (!(problemId && problemCode && runtimeSub && languageSub && isPassed)) {
+      return res.status(400).json({
+          message: "Send all the required data",
+          success: false,
+      });
+  }
 
-    // Check if problemId and status are provided
-    if (!(problemId && status && code)) {
-        return res.status(404).json({
-            message: "Send all the data",
-            success: false,
-        });
-    }
+  try {
 
-    // Extract token from cookies
-    const token = req.cookies.token;
-    try {
-        // Update the submissions array
-        await User.updateOne(
-            { token },
-            {
-                $push: { submissions: { problemId, code, status } },
-            }
-        );
+      // Create a new submission
+      const newSubmission = await Submission.create({
+          userId: user._id,
+          runtimeSub,
+          problemId,
+          problemCode,
+          languageSub,
+          isPassed
+      });
 
-        res.status(200).json({
-            message: "Submission updated successfully",
-            success: true,
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Internal Server Error",
-            success: false,
-            error: error.message,
-        });
-    }
+
+      res.status(200).json({
+          message: "Submission updated successfully",
+          newSubmission,
+          success: true,
+      });
+  } catch (error) {
+      res.status(500).json({
+          message: "Internal Server Error",
+          success: false,
+          error: error.message,
+      });
+  }
 });
+
+app.post("/all/submissions", auth, async (req, res) => {
+  try {
+    const AllSubmissions = await Submission.find();
+    
+    res.status(200).json({
+      message: "Get All submissions",
+      AllSubmissions,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error fetching all submissions:", error);
+    res.status(500).json({
+      message: "Failed to get all submissions",
+      error: error.message,
+      success: false,
+    });
+  }
+});
+
+
+app.post("/getallSubmit", auth, async (req,res) => {
+     const token = req.cookies.token;
+   try{
+     const user = await User.findOne({token});
+     if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    console.log("User from backend :", user);
+    const submissions = await Submission.find({ userId: user._id });
+    
+    res.json({
+      message: "User submissions retrieved successfully",
+      success: true,
+      submissions,
+   });
+   }catch(error){
+    res.status(500).json({
+      message: "An error occurred while retrieving submissions",
+      success: false,
+      error: error.message,
+   });
+
+   }
+}) 
+
 
 app.post("/create/contest", authAdmin, async (req, res) => {
     const { title, contestCode, startTime, endTime, duration } = req.body;
@@ -633,6 +668,46 @@ app.post("/update/contest", authAdmin, async (req, res) => {
     }
 });
 
+app.post("/contest/complete", auth, async (req,res) => {
+    const { user, ratings, contestCode, } = req.body;
+    if(!(user && ratings && contestCode)){
+        return res.status(404).json({
+            message : "fill all the ContestDetails",
+            success : false,
+        })
+    };
+    const rating = {
+        userId: user._id, // Assuming user object has _id field
+        contestRating: ratings,
+      };
+
+      try {
+        const contest = await Contest.findOneAndUpdate(
+          { contestCode },
+          { $push: { participants: rating } },
+          { new: true } // Returns the updated document
+        );
+    
+        if (!contest) {
+          return res.status(404).json({
+            message: "Contest not found",
+            success: false,
+          });
+        }
+    
+        res.status(200).json({
+          message: "Rating updated successfully",
+          success: true,
+          contest,
+        });
+      } catch (error) {
+        res.status(500).json({
+          message: "Error updating rating",
+          success: false,
+          error: error.message,
+        });
+      }
+    });
 
 
 

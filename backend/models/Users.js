@@ -1,21 +1,6 @@
 import mongoose from 'mongoose';
 
-// Create schema for submissions
-const submissionSchema = new mongoose.Schema({
-  problemId: {
-    type: String,
-    required: true,
-  },
-  code: {
-    type: String,
-    required: true,
-    unique : true,
-  },
-  status: {
-    type: String,
-    required: true,
-  },
-});
+
 
 // Create schema for user
 const userSchema = new mongoose.Schema({
@@ -40,7 +25,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  submissions: [submissionSchema],
   token: {
     type: String,
   },

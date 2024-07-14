@@ -1,31 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import ProblemContext from "./problemContext";
-import { getProblems } from '../../service/api';
+import { getProblemSet } from '../../service/api';
 
 const ProblemState = (props) => {
-    const [problem, setProblem] = useState(null);
+    const [problems, setProblems] = useState([]);
+    const [loading, setLoading] = useState(true); // Added loading state
 
     useEffect(() => {
-        fetchProblem();
+        fetchContextProblems();
     }, []);
 
-    const fetchProblem = async () => {
+    const fetchContextProblems = async () => {
         try {
-            const response = await getProblems();
-            if (response.existProblem) {
-                setProblem(response.existProblem);
+            const response = await getProblemSet();
+            console.log("Response from ProblemSet Context:", response);
+            if (response) {
+                setProblems(response);
             } else {
-                setProblem(null);
+                setProblems([]);
             }
         } catch (err) {
             console.error("Error fetching user profile", err);
-            setProblem(null);
+            setProblems([]); // Set problems to empty array on error
+        } finally {
+            setLoading(false); // Set loading state to false regardless of success or failure
         }
     };
 
     return (
-        <ProblemContext.Provider value={{ problem, fetchProblem }}>
-            {props.children}
+        <ProblemContext.Provider value={{ problems, fetchContextProblems, loading }}> {/* Pass loading state */}
+            {loading ? (
+                <div>Loading...</div> // Display a loading indicator
+            ) : (
+                props.children
+            )}
         </ProblemContext.Provider>
     );
 };
