@@ -711,7 +711,7 @@ app.post("/contest/complete", auth, async (req,res) => {
 
 
 
-app.get("/contests/contest", auth, async (req, res) => {
+app.get("/contests/contest", async (req, res) => {
     try {
         const getContest = await Contest.find();
         return res.status(200).json({
