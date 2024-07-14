@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { getSubmission } from '../service/api';
+import SpinnerLoader from './SpinnerLoader';
 
 const SubmissionStatus = ({ problemId }) => {
   const [status, setStatus] = useState(null);
@@ -32,7 +33,7 @@ const SubmissionStatus = ({ problemId }) => {
   } else if (status === 'not-passed') {
     return ; // Return a red times icon if no passed submission found
   } else {
-    return <span>Loading...</span>; // Return a loading state while fetching data
+    return <span><SpinnerLoader/></span>; // Return a loading state while fetching data
   }
 };
 

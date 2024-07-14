@@ -20,9 +20,10 @@ import DescriptionCard from './DescriptionCard';
 import EditorialCard from './EditorialCard';
 import SubmissionCard from './SubmissionCard';
 import AllSubmissionsCard from './AllSubmissionCard';
+import SpinnerLoader from './SpinnerLoader';
 
 export {App, Navbar, ContestCard, ProblemSetModal, AdminContest,
     ProblemCard, ProblemList, ContestDetails,Timer,RealTimeRatings,
      ProblemFormModal, ProblemRow, AdminDashboard, CircularMetricsCard,
     UserProblemRow, SkillProgressBar, SubmissionStatus, Skills, DescriptionCard
-    , EditorialCard, SubmissionCard, AllSubmissionsCard};
+    , EditorialCard, SubmissionCard, AllSubmissionsCard, SpinnerLoader};

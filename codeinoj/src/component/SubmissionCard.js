@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { getSubmission } from '../service/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import SpinnerLoader from './SpinnerLoader';
 
 const SubmissionCard = ({ problemId, userId }) => {
   const [submissions, setSubmissions] = useState([]);
   const [selectedCode, setSelectedCode] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -19,12 +21,19 @@ const SubmissionCard = ({ problemId, userId }) => {
           setSubmissions(filteredSubmissions);
           console.log("Finally get FilteredSubmissions : ", filteredSubmissions);
         }
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching submissions:', error);
       }
     };
 
     fetchSubmissions();
+
+    
+     
+   
+
+
   }, [problemId, userId]);
 
   
@@ -39,7 +48,9 @@ const SubmissionCard = ({ problemId, userId }) => {
   };
 
   return (
-    <div className="card h-100">
+    <div>
+    {loading ? <SpinnerLoader /> :
+    <div className="card h-100" >
       <div className="card-body">
         <h5 className="card-title">Your Submissions</h5>
         <div className="table-responsive">
@@ -71,6 +82,9 @@ const SubmissionCard = ({ problemId, userId }) => {
           </table>
         </div>
       </div>
+    </div>
+    
+}
     </div>
   );
 };

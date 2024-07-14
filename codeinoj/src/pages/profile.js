@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import UserContext from '../context/user/userContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { UserProblemRow, SubmissionStatus, CircularMetricsCard, Skills } from '../component';
+import { UserProblemRow, SubmissionStatus, CircularMetricsCard, Skills, SpinnerLoader } from '../component';
 import { getSubmission, getProblemSet } from '../service/api';
 
 const Profile = () => {
@@ -57,7 +57,7 @@ const Profile = () => {
   }, [user, fetchUserProfile]);
 
   if (!user || loading) {
-    return <div>Loading...</div>;
+    return <div><SpinnerLoader/></div>;
   }
 
   const handleProblem = (problem, event) => {

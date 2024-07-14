@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/contest.css';
 import { getAllContest, getProblems, sendRatings } from '../service/api';
 import UserContext from '../context/user/userContext';
-import { ContestDetails, ProblemList, Timer, RealTimeRatings } from '../component/index';
+import { ContestDetails, ProblemList, Timer, RealTimeRatings, SpinnerLoader } from '../component/index';
 
 const Contest = () => {
   const { contestCode } = useParams();
@@ -114,7 +114,7 @@ const Contest = () => {
   };
 
   if (loadingContest || loadingProblems) {
-    return <div>Loading...</div>;
+    return <div><SpinnerLoader/></div>;
   }
 
   if (!contest) {

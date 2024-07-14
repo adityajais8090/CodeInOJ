@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getProblemSet, getSubmission } from '../service/api';
 import SkillProgressBar from './SkillProgressBar';
+import SpinnerLoader from './SpinnerLoader';
 
 const Skills = ({ user }) => {
   const [submitProblem, setSubmitProblem] = useState([]);
   const [skillsProgress, setSkillsProgress] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +64,7 @@ const Skills = ({ user }) => {
           setSubmitProblem(matchedProblems);
           setSkillsProgress(skillsProgress);
         }
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -71,6 +74,8 @@ const Skills = ({ user }) => {
   }, []);
 
   return (
+    <div>
+    {loading ? <SpinnerLoader /> :
     <div className="card mb-4">
       <div className="card-body mb-md-0">
         <p className="mb-4">
@@ -84,6 +89,8 @@ const Skills = ({ user }) => {
           />
         ))}
       </div>
+    </div>
+}
     </div>
   );
 };

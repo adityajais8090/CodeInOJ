@@ -6,10 +6,11 @@ import UserContext from '../context/user/userContext';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { CircularMetricsCard, SubmissionStatus, Skills } from '../component';
+import { CircularMetricsCard, SubmissionStatus, Skills, SpinnerLoader } from '../component';
 
 const Problemset = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [problems, setProblems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortedProblems , setSortedProblems] = useState([]);
@@ -43,6 +44,11 @@ const Problemset = () => {
       fetchUserProfile();
     }
     fetchData();
+
+    
+      setLoading(false);
+   
+
   }, [user]);
 
   useEffect(() => {
@@ -92,6 +98,10 @@ const Problemset = () => {
     if (problems.length > 0) {
       fetchSubmission();
     }
+   
+      setLoading(false);
+   
+
   }, [user, problems]);
   
   useEffect(() => {
@@ -103,6 +113,10 @@ const Problemset = () => {
   
     const sortedHard = problems.filter(problem => problem.difficulty.includes("hard"));
     setHard(sortedHard.length);
+   
+      setLoading(false);
+    
+
   }, [problems]);
   
 
@@ -159,13 +173,13 @@ const Problemset = () => {
     setSortedProblems(sortedHard);
   };
 
-  if (!problems) {
-    return <div>Loading...</div>; // Show a loading indicator while problems are fetched
-}
+ 
   
 
   return (
     <>
+    <div>
+    {loading ? <SpinnerLoader /> :
       <div className="container py-2 px-2">
         <div className="row">
         <div className="col-lg-9">
@@ -295,6 +309,9 @@ const Problemset = () => {
       </div>
       </div>
       </div>
+
+}
+    </div>
       
     </>
   );

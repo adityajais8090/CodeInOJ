@@ -1,20 +1,18 @@
-import React, { useContext, useEffect } from 'react';
-import { getProfile, delSession, getAdmin } from '../service/api';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import UserContext from '../context/user/userContext';
+import { getProfile, getAdmin, delSession } from '../service/api';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { user, fetchUserProfile } = useContext(UserContext);
+  const navbarCollapseRef = useRef(null);
 
-    useEffect(() => {
-        if (!user) {
-            fetchUserProfile();
-        }
-    }, [user]);
-
- 
- // console.log("my user is undefined: ", user);
+  useEffect(() => {
+    if (!user) {
+      fetchUserProfile();
+    }
+  }, [user, fetchUserProfile]);
 
 
   const handleLogout = async (e) => {
@@ -23,13 +21,13 @@ const Navbar = () => {
       const response = await delSession();
       console.log("Response while logout: ", response);
       if (response.success) {
-        window.location.href = '/';
+        window.location.href = '/login';
       }
     } catch (err) {
       console.log("Error while logout: ", err);
     }
   };
-
+  
 
   const handleProfilePage = async (e) => {
     e.preventDefault();
@@ -61,6 +59,13 @@ const Navbar = () => {
     }
   };
 
+  const handleNavLinkClick = () => {
+    const navbarCollapse = navbarCollapseRef.current;
+    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+      navbarCollapse.classList.remove('show');
+    }
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
@@ -76,46 +81,44 @@ const Navbar = () => {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="collapse navbar-collapse" id="navbarText">
+        <div className="collapse navbar-collapse" id="navbarText" ref={navbarCollapseRef}>
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link" to="/">Home</Link>
+              <Link className="nav-link" to="/" onClick={handleNavLinkClick}>Home</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/problemset">ProblemSet</Link>
+              <Link className="nav-link" to="/problemset" onClick={handleNavLinkClick}>ProblemSet</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" onClick={handleProfilePage}>Profile</Link>
+              <Link className="nav-link" onClick={e => { handleProfilePage(e); handleNavLinkClick(); }}>Profile</Link>
             </li>
             {user && user.role === 'admin' && (
               <li className="nav-item">
-                <Link className="nav-link" onClick={handleAdmin}>Admin</Link>
+                <Link className="nav-link" onClick={e => { handleAdmin(e); handleNavLinkClick(); }}>Admin</Link>
               </li>
             )}
           </ul>
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            
-          {!user && (<>
-               
-                  <li className="nav-item">
-                  <Link className="nav-link" to="/login">Login</Link>
+            {!user && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/login" onClick={handleNavLinkClick}>Login</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/register">Register</Link>
+                  <Link className="nav-link" to="/register" onClick={handleNavLinkClick}>Register</Link>
                 </li>
-              
-              </>)}
-           
-              {user && (
-                <>
+              </>
+            )}
+            {user && (
+              <>
                 <li className="nav-item">
-                    <Link className="nav-link" onClick={handleProfilePage}>{user.firstname}</Link>
-                  </li>
-                  <li className="nav-item">
-                  <Link className="nav-link" onClick={handleLogout}>Logout</Link>
+                  <Link className="nav-link" onClick={e => { handleProfilePage(e); handleNavLinkClick(); }}>{user.firstname}</Link>
                 </li>
-              </> )}
-          
+                <li className="nav-item">
+                  <Link className="nav-link" to="/" onClick={e => { handleLogout(e); handleNavLinkClick(); }}>Logout</Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>

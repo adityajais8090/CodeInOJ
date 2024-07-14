@@ -3,6 +3,7 @@ import { useState , useContext } from 'react';
 import { checkData } from '../service/api';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../context/user/userContext';
+import { SpinnerLoader } from '../component';
 
 
 
@@ -10,6 +11,7 @@ const Login = () => {
   const { fetchUserProfile } = useContext(UserContext);
  
  const navigate = useNavigate();
+ const [loading, setLoading ] = useState();
   const [userInput, setUserInput] = useState({
     email: "",
     password: "",
@@ -25,11 +27,13 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await checkData(userInput);
       if (response.success) {
         console.log("Checkers :", response.existUser);
      fetchUserProfile();
+     setLoading(false);
         navigate('/');
       } else {
         console.error('Login failed:', response.message);

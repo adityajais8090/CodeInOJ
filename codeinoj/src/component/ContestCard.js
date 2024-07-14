@@ -48,7 +48,7 @@ const ContestCard = ({ iconClass, contestType, daysLeft, rating, title, contestC
             <div className="text-end mt-4">
               <button type="button" 
               className="btn btn-outline-secondary"
-              onClick={(event) => handleContestRegister(contestCode, event)}>Register Now</button>
+              onClick={(event) => handleContestRegister(contestCode, event)}>Join Now</button>
             </div>
           </div>
         </div>

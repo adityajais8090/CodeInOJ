@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { getAllSubmissions } from '../service/api';
+import SpinnerLoader from './SpinnerLoader';
 
 const AllSubmissionsCard = ({ problemId }) => {
   const [allSubmissions, setAllSubmissions] = useState([]);
+  const [ loading, setLoading ] = useState(true);
   console.log("Problem Id :", problemId);
 
   useEffect(() => {
@@ -16,6 +18,7 @@ const AllSubmissionsCard = ({ problemId }) => {
           setAllSubmissions(filteredSubmissions);
           console.log("Filtered :", filteredSubmissions);
         }
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching all submissions:', error);
       }
@@ -33,6 +36,9 @@ const AllSubmissionsCard = ({ problemId }) => {
   };
 
   return (
+    <div>
+  { loading ? <SpinnerLoader/> :
+    
     <div className="card h-100">
       <div className="card-body">
         <h5 className="card-title">All Submissions</h5>
@@ -62,6 +68,8 @@ const AllSubmissionsCard = ({ problemId }) => {
         </div>
       </div>
     </div>
+}
+</div>
   );
 };
 

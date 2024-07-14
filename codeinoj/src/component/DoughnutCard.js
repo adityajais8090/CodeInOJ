@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import SpinnerLoader from './SpinnerLoader';
 
 // Register the required elements and plugins
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -24,6 +25,7 @@ const CircularMetricsCard = () => {
   const [solvedEasy, setSolvedEasy] = useState(0);
   const [solvedMedium, setSolvedMedium] = useState(0);
   const [solvedHard, setSolvedHard] = useState(0);
+  const [ loading , setLoading] = useState(true);
 
   const { user, fetchUserProfile } = useContext(UserContext);
 
@@ -82,7 +84,7 @@ const CircularMetricsCard = () => {
         setSolvedEasy(easyProblems.size);
         setSolvedMedium(mediumProblems.size);
         setSolvedHard(hardProblems.size);
-
+       setLoading(false);
       } catch (error) {
         console.error('Error fetching submissions:', error);
       }
@@ -140,6 +142,8 @@ const CircularMetricsCard = () => {
   };
 
   return (
+ <div>
+    {loading ? <SpinnerLoader/> : 
     <div className="card mb-4">
       <div className="card-body text-center">
         <div className="row">
@@ -164,6 +168,7 @@ const CircularMetricsCard = () => {
         </div>
       </div>
     </div>
+} </div>
   );
 };
 

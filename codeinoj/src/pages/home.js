@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/home.css';
-import ContestCard from '../component/ContestCard';
+import {ContestCard , SpinnerLoader} from '../component'
 import { getAllContest } from '../service/api';
 
 const Home = () => {
   const [allContest, setAllContest] = useState([]);
+  const [ loading, setLoading ] = useState(true);
 
   const fetchData = async () => {
     try {
@@ -18,6 +19,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchData();
+    setLoading(false);
   }, []);
 
   const calculateDaysLeft = (startTime) => {
@@ -30,6 +32,7 @@ const Home = () => {
 
   return (
     <>
+    {loading ? <SpinnerLoader/> :
       <div className="container mt-5 mb-3">
         <div className="row">
           {allContest.map((contest, index) => (
@@ -48,6 +51,7 @@ const Home = () => {
           ))}
         </div>
       </div>
+}
     </>
   );
 };
