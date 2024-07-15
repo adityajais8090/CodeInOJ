@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import UserContext from '../context/user/userContext';
 import { getProfile, getAdmin, delSession } from '../service/api';
+import SpinnerLoader from './SpinnerLoader';
+
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const Navbar = () => {
     //  console.log("Response while logout:", response);
       if (response.success) {
         
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     } catch (err) {
     //  console.log("Error while logout:", err);

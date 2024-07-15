@@ -4,14 +4,14 @@ import '../styles/App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-import UserState from '../context/user/userState';
+
 import { Home, Register, Login, Profile, Problem, Admin, Problemset, Contest } from '../pages';
 import Navbar from './Navbar';
 import {PrivateRoute} from './PrivateRoute';
 
 function App() {
   return (
-    <UserState>
+    
       <Router>
         <Navbar />
         <Routes>
@@ -61,7 +61,7 @@ function App() {
             } />
         </Routes>
       </Router>
-    </UserState>
+    
   );
 }
 
