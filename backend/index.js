@@ -568,7 +568,7 @@ app.post("/getallSubmit", auth, async (req,res) => {
         success: false,
       });
     }
-    console.log("User from backend :", user);
+    //console.log("User from backend :", user);
     const submissions = await Submission.find({ userId: user._id });
     
     res.json({
