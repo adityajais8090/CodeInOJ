@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import UserContext from '../context/user/userContext';
-import { getProfile, getAdmin } from '../service/api';
-
+import { getProfile, getAdmin, delSession } from '../service/api';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user, fetchUserProfile, handleLogout } = useContext(UserContext);
+  const { user, fetchUserProfile } = useContext(UserContext);
   const navbarCollapseRef = useRef(null);
 
   useEffect(() => {
@@ -16,7 +15,20 @@ const Navbar = () => {
   }, [user, fetchUserProfile]);
 
 
- 
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await delSession();
+    //  console.log("Response while logout:", response);
+      if (response.success) {
+        
+        window.location.href = '/login';
+      }
+    } catch (err) {
+    //  console.log("Error while logout:", err);
+    }
+  };
+  
   
 
   const handleProfilePage = async (e) => {
