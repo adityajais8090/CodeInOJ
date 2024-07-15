@@ -3,44 +3,31 @@ import { Navigate } from 'react-router-dom';
 import UserContext from '../context/user/userContext';
 import SpinnerLoader from './SpinnerLoader';
 
-
-
 const PrivateRoute = ({ children }) => {
-  const { user, fetchUserProfile } = useContext(UserContext);
- 
-  const [loading, setLoading] = useState(true);
+    const { user, fetchUserProfile, loading } = useContext(UserContext);
+    const [attempts, setAttempts] = useState(0);
+    const maxAttempts = 5;
 
-  useEffect(() => {
-    const fetchUser = async () => {
-     
-        let attempts = 0;
-        const maxAttempts = 5;
-        while (attempts < maxAttempts) {
-          await fetchUserProfile();
-          if (user) {
-            setLoading(false);
-            return;
-          }
-          attempts += 1;
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second
+    useEffect(() => {
+        if (!user && attempts < maxAttempts) {
+            const interval = setInterval(() => {
+                fetchUserProfile();
+                setAttempts(prev => prev + 1);
+            }, 1000);
+
+            return () => clearInterval(interval);
         }
-      
-      setLoading(false);
-    };
+    }, [user, attempts, fetchUserProfile]);
 
-    fetchUser();
-  }, [user]);
+    if (loading) {
+        return <div><SpinnerLoader/></div>;
+    }
 
-  if (loading) {
-    return <div><SpinnerLoader/></div>; // Display a loading indicator while fetching user profile
-  }
-
-  // Check if user is authenticated and token is valid
-  if (user) {
-    return children;
-  } else {
-    return <Navigate to="/login" />;
-  }
+    if (user) {
+        return children;
+    } else {
+        return <Navigate to="/login" />;
+    }
 };
 
 export { PrivateRoute };
