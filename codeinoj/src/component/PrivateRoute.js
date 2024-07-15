@@ -7,14 +7,14 @@ import SpinnerLoader from './SpinnerLoader';
 
 const PrivateRoute = ({ children }) => {
   const { user, fetchUserProfile } = useContext(UserContext);
-  const token = localStorage.getItem('userToken');
+ 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
      
         let attempts = 0;
-        const maxAttempts = 6;
+        const maxAttempts = 5;
         while (attempts < maxAttempts) {
           await fetchUserProfile();
           if (user) {
@@ -29,7 +29,7 @@ const PrivateRoute = ({ children }) => {
     };
 
     fetchUser();
-  }, [token, user, fetchUserProfile]);
+  }, [user, fetchUserProfile]);
 
   if (loading) {
     return <div><SpinnerLoader/></div>; // Display a loading indicator while fetching user profile
