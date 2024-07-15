@@ -140,10 +140,13 @@ app.post("/login", async (req, res) => {
 
 app.delete('/logout', auth, (req, res) => {
     try {
+      console.log("Logout Successfully :");
+
       res.clearCookie('token').json({
         message: 'Logout Successfully!',
         success: true,
       });
+     
     } catch (err) {
       console.log('Failed to logout:', err);
       res.status(500).json({
