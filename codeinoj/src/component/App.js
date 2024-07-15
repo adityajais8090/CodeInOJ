@@ -7,7 +7,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import UserState from '../context/user/userState';
 import { Home, Register, Login, Profile, Problem, Admin, Problemset, Contest } from '../pages';
 import Navbar from './Navbar';
-import PrivateRoute from './PrivateRoute';
+import {PrivateRoute} from './PrivateRoute';
 
 function App() {
   return (

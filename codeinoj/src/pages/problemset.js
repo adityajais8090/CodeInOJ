@@ -33,7 +33,7 @@ const Problemset = () => {
     const fetchData = async () => {
       try {
         const response = await getProblemSet();
-        console.log("Response from ProblemSet:", response);
+       // console.log("Response from ProblemSet:", response);
         setProblems(response);
         setSortedProblems(response);
       } catch (error) {
@@ -55,7 +55,7 @@ const Problemset = () => {
     const fetchSubmission = async () => {
       try {
         const response = await getSubmission();
-        console.log("Response from getSubmission:", response.data.submissions);
+        //console.log("Response from getSubmission:", response.data.submissions);
 
         // Filter to include only passed submissions
         const passedSubmissions = response.data.submissions.filter(sub => sub.isPassed);

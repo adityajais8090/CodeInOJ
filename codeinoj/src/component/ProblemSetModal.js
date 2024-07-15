@@ -13,7 +13,7 @@ const ProblemSetModal = ({ show, onHide, onAddProblem }) => {
                 const response = await getProblemSet();
                 setProblems(response);
             } catch (error) {
-                console.log("Error fetching problems:", error);
+               // console.log("Error fetching problems:", error);
             }
         };
 

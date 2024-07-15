@@ -43,7 +43,7 @@ const AdminContest = () => {
     const handleAddContest = async () => {
         try {
             const response = await createContest(contestData);
-            console.log('Adding contest:', response);
+            //console.log('Adding contest:', response);
             setContestData({
                 title: '',
                 contestCode: '',
@@ -60,10 +60,10 @@ const AdminContest = () => {
     const fetchData = async () => {
         try {
             const response = await getAllContest();
-            console.log("Here is my get contest:", response.data);
+           // console.log("Here is my get contest:", response.data);
             setAllContest(response.data);
         } catch (error) {
-            console.log("Error in fetching data:", error);
+           // console.log("Error in fetching data:", error);
         }
     };
 
@@ -77,10 +77,10 @@ const AdminContest = () => {
                 contestCode : selectedContestCode,
                 problemCode : problemData.code,
             }
-            console.log(`Adding problem to selected table ${selectedTableIndex}:`, payload);
+            //console.log(`Adding problem to selected table ${selectedTableIndex}:`, payload);
             // Add API call to add problem to the contest
             const response = await addProblemContest(payload);
-            console.log("Get response after add problem in contest : ", response);
+           // console.log("Get response after add problem in contest : ", response);
             if(response.success){
                 fetchData();
             }

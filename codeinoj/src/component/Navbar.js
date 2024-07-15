@@ -19,21 +19,23 @@ const Navbar = () => {
     e.preventDefault();
     try {
       const response = await delSession();
-      console.log("Response while logout: ", response);
+    //  console.log("Response while logout:", response);
       if (response.success) {
+        
         window.location.href = '/login';
       }
     } catch (err) {
-      console.log("Error while logout: ", err);
+    //  console.log("Error while logout:", err);
     }
   };
+  
   
 
   const handleProfilePage = async (e) => {
     e.preventDefault();
     try {
       const response = await getProfile();
-      console.log("response profile : ", response);
+     // console.log("response profile : ", response);
       if (response.success) {
         navigate('/profile');
       } else {
@@ -48,7 +50,7 @@ const Navbar = () => {
     e.preventDefault();
     try {
       const response = await getAdmin();
-      console.log("response profile : ", response);
+     // console.log("response profile : ", response);
       if (response.success) {
         navigate('/admin');
       } else {

@@ -10,10 +10,10 @@ const Home = () => {
   const fetchData = async () => {
     try {
         const response = await getAllContest();
-        console.log("Here is my get contest:", response.data);
+       // console.log("Here is my get contest:", response.data);
         setAllContest(response.data);
     } catch (error) {
-        console.log("Error in fetching data:", error);
+       // console.log("Error in fetching data:", error);
     }
   };
 

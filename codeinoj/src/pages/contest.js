@@ -59,7 +59,7 @@ const Contest = () => {
           }
         }
       } catch (error) {
-        console.log("Error in fetching data:", error);
+       // console.log("Error in fetching data:", error);
         setLoadingContest(false);
         setLoadingProblems(false);
       }
@@ -76,7 +76,7 @@ const Contest = () => {
 
   const handleTimerStart = () => {
     if(isContestActive) {
-      console.log("Contest Started");
+      //console.log("Contest Started");
     }
   }
 
@@ -99,9 +99,9 @@ const Contest = () => {
     }
     try {
       const response = await sendRatings(payload);
-      console.log("Response from ratings:", response);
+      //console.log("Response from ratings:", response);
     } catch (err) {
-      console.log("Error updating ratings:", err);
+     // console.log("Error updating ratings:", err);
     }
   };
 

@@ -67,7 +67,7 @@ const Problem = () => {
         setLoadingDescription(false);
         setLoadingCompiler(false);
       } catch (err) {
-        console.log("Error in getting TestCases", err);
+        //console.log("Error in getting TestCases", err);
         setLoadingDescription(false);
         setLoadingCompiler(false);
       }

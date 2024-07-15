@@ -5,18 +5,18 @@ import SpinnerLoader from './SpinnerLoader';
 const AllSubmissionsCard = ({ problemId }) => {
   const [allSubmissions, setAllSubmissions] = useState([]);
   const [ loading, setLoading ] = useState(true);
-  console.log("Problem Id :", problemId);
+ // console.log("Problem Id :", problemId);
 
   useEffect(() => {
     const fetchAllSubmissions = async () => {
       try {
         const response = await getAllSubmissions(); // Replace with actual API function
-        console.log("All Submissions :", response.AllSubmissions);
+       // console.log("All Submissions :", response.AllSubmissions);
         if (response.success) {
           // Filter submissions based on problemId
           const filteredSubmissions = response.AllSubmissions.filter(submission => submission.problemId === problemId);
           setAllSubmissions(filteredSubmissions);
-          console.log("Filtered :", filteredSubmissions);
+         // console.log("Filtered :", filteredSubmissions);
         }
         setLoading(false);
       } catch (error) {

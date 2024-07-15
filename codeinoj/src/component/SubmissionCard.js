@@ -13,13 +13,13 @@ const SubmissionCard = ({ problemId, userId }) => {
     const fetchSubmissions = async () => {
       try {
         const response = await getSubmission(); // Replace with actual API function
-        console.log("All problem Submission : ", response.data.submissions);
+       // console.log("All problem Submission : ", response.data.submissions);
         if (response.data.success) {
           const filteredSubmissions = response.data.submissions.filter(submission => {
             return submission.problemId === problemId && submission.userId === userId;
           });
           setSubmissions(filteredSubmissions);
-          console.log("Finally get FilteredSubmissions : ", filteredSubmissions);
+         // console.log("Finally get FilteredSubmissions : ", filteredSubmissions);
         }
         setLoading(false);
       } catch (error) {

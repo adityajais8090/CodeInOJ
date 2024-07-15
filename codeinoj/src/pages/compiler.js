@@ -90,7 +90,7 @@ const Compiler = ({ problem, initialCode }) => {
     
             try {
                 const response = await getSubmitResult(payload);
-                console.log("Here is my submission response:", response);
+               // console.log("Here is my submission response:", response);
     
                 let result = [];
                 if (response.failedTestcase) {
@@ -100,8 +100,8 @@ const Compiler = ({ problem, initialCode }) => {
                 setCurrentTestCase(response.count);
                 setStderr('');
     
-                console.log("currTestcase :", response.count);
-                console.log("here is Results :", result);
+               // console.log("currTestcase :", response.count);
+                //console.log("here is Results :", result);
     
                 endTime = Date.now();
                 const runtime = (endTime - startTime); // Calculate runtime in seconds
@@ -132,9 +132,9 @@ const Compiler = ({ problem, initialCode }) => {
             isPassed: status === 'passed',
            
         };
-        console.log( "DataSubmit : ", submitload );
+       // console.log( "DataSubmit : ", submitload );
         const response = await postSubmissions(submitload);
-        console.log("submissions res :", response);
+       // console.log("submissions res :", response);
     };
     
     
@@ -147,13 +147,13 @@ const Compiler = ({ problem, initialCode }) => {
         };
         try {
             const response = await runOutput(payload);
-            console.log("Here is my response :" , response);
+           // console.log("Here is my response :" , response);
             setOutput(response.output);
             setStderr('');
         } catch (error) {
-            console.log("Error running code:", error.data);
+          //  console.log("Error running code:", error.data);
             setStderr(error.data.error || error.message || "Unknown error occurred"); 
-            console.log("here is my stderr :", stderr);
+          //  console.log("here is my stderr :", stderr);
         }
     };
 

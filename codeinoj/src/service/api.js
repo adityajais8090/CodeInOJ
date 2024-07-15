@@ -23,7 +23,7 @@ export const uploadData = async (data) => {
          
         return response;
     } catch (err) {
-        console.error("Error in Uploading form Data: " + err.response.data);
+       // console.error("Error in Uploading form Data: " + err.response.data);
     }
 }
 
@@ -31,16 +31,16 @@ export const uploadData = async (data) => {
 export const checkData = async (data) => {
     try {
         const response = await axios.post(`${API_URL}/login`, data , {
-            withCredentials : true,
+          withCredentials : true,
             headers: {
                 "Content-Type": "application/json",
             },
         });
-        console.log("here is my response data : ", response.data);
+       // console.log("here is my response data : ", response.data);
        
         return response.data;
     } catch (err) {
-        console.error("Error in Upload Login data: " + err);
+       // console.error("Error in Upload Login data: " + err);
        
     }
 }
@@ -53,10 +53,10 @@ export const delSession = async () => {
           "Content-Type": "application/json",
       },
   } );
-  console.log(response);
+ // console.log(response);
   return response.data;
   }catch(err){
-    console.log("Error in deleting Session :", err);
+    //console.log("Error in deleting Session :", err);
     return err;
   }
 }
@@ -69,10 +69,10 @@ const response = await axios.get(`${API_URL}/admin`,{
       "Content-Type": "application/json",
     },
     });
-    console.log("Response getAdmin api : ", response.data);
+    //console.log("Response getAdmin api : ", response.data);
     return response.data;
  }catch(err){
-    console.log("Error in getting admin", err);
+   // console.log("Error in getting admin", err);
     return { success: false, message: 'Failed to fetch admin', Error : err };
  }
 }
@@ -85,10 +85,10 @@ export const getProfile = async () => {
        "Content-Type": "application/json",
      },
      });
-     console.log("Response getProfile api : ", response.data);
+    // console.log("Response getProfile api : ", response.data);
      return response.data;
   }catch(err){
-     console.log("Error in getting profile", err);
+    // console.log("Error in getting profile", err);
      return { success: false, message: 'Failed to fetch profile', Error : err };
   }
  }
@@ -101,11 +101,11 @@ export const getProblemSet = async () => {
         "Content-Type": "application/json",
       },
     });
-    console.log("Response:", response);
+    //console.log("Response:", response);
     const problems = Array.isArray(response.data) ? response.data : Object.values(response.data);
     return problems;
   } catch (err) {
-    console.log("Error in getting problemSet api:", err);
+   // console.log("Error in getting problemSet api:", err);
     return []; // Return an empty array in case of error
   }
 };
@@ -120,10 +120,10 @@ export const getProblems = async (ObjectId) => {
       },
     });
 
-    console.log("Response from getProblems:", response.data);
+   // console.log("Response from getProblems:", response.data);
     return response.data.existProblem;
   } catch (error) {
-    console.error("Error in getting problems:", error);
+   // console.error("Error in getting problems:", error);
     throw error; // Rethrow the error to handle it further up the call chain
   }
 };
@@ -137,10 +137,10 @@ export const getTestCases = async(code) => {
           "Content-Type": "application/json",
         },
       });
-      console.log("Here is my response data : ", response.data);
+     // console.log("Here is my response data : ", response.data);
       return response.data;
     }catch(err){
-      console.log("Error in getting testcases", err);
+     // console.log("Error in getting testcases", err);
       return err;
     }
   }
@@ -157,14 +157,14 @@ export const getTestCases = async(code) => {
        
       return response;
   } catch (err) {
-      console.error("Error in Uploading form Data: " + err.response.data);
+     // console.error("Error in Uploading form Data: " + err.response.data);
       return err;
   }
   }
 
   export const updateProblem = async(data) => {
     try{
-      console.log("Data in api", data);
+     // console.log("Data in api", data);
       const response = await axios.post(`${API_URL}/problem/edit`, data , {
         withCredentials: true,
           headers: {
@@ -175,7 +175,7 @@ export const getTestCases = async(code) => {
       return response;
 
     }catch(err){
-      console.error("Error in Updating form Data: " + err.response.data);
+      //console.error("Error in Updating form Data: " + err.response.data);
       return err;
     }
   }
@@ -184,7 +184,7 @@ export const getTestCases = async(code) => {
   export const deleteProblem = async (data) => {
       try {
           // Store the response
-          console.log("Data in api : " , data);
+        //  console.log("Data in api : " , data);
           const response = await axios.delete(`${API_URL}/problemset/problem/delete`, {
               data: data,
               withCredentials: true,
@@ -194,7 +194,7 @@ export const getTestCases = async(code) => {
           });
           return response;
       } catch (err) {
-          console.error("Error in deleting the problem: " + err.response.data);
+         // console.error("Error in deleting the problem: " + err.response.data);
           return err;
       }
   }
@@ -208,7 +208,7 @@ export const getTestCases = async(code) => {
       });
       return data;
   } catch (error) {
-      console.log(error.response);
+     // console.log(error.response);
       throw error.response;
   }
   }
@@ -224,7 +224,7 @@ export const getTestCases = async(code) => {
         });
         return response;
     } catch (error) {
-        console.log("Axios error:", error);
+       // console.log("Axios error:", error);
         throw error; // Re-throw the error to handle it in the calling function
     }
 }
@@ -239,7 +239,7 @@ export const getTestCases = async(code) => {
   });
   return response;
   }catch(error){
-    console.log("Axios getSubmission :", error);
+   // console.log("Axios getSubmission :", error);
     throw error;
   }
  }
@@ -252,10 +252,10 @@ export const getTestCases = async(code) => {
           "Content-Type": "application/json",
       },
   });
-  console.log( "ALL Submission Response : ", response);
+ // console.log( "ALL Submission Response : ", response);
     return response.data;
   }catch(error){
-    console.log("Axios getAllSubmission :", error);
+  //  console.log("Axios getAllSubmission :", error);
     throw error;
   }
  }
@@ -268,11 +268,11 @@ export const getTestCases = async(code) => {
             "Content-Type": "application/json",
         },
     });
-    console.log("here is api data :", data);
+   // console.log("here is api data :", data);
     return data;
 
     }catch(error){
-      console.log("Error is from api submit : " , error.response);
+     // console.log("Error is from api submit : " , error.response);
       throw error.response;
     }
   }
@@ -287,7 +287,7 @@ export const getTestCases = async(code) => {
       });
       return response.data;
     }catch(error){
-      console.log("Error in createContest : " , error);
+     // console.log("Error in createContest : " , error);
     }
   }
 
@@ -302,7 +302,7 @@ export const getTestCases = async(code) => {
       return response.data;
 
     }catch(error){
-      console.log("Error in get all Contest : " , error);
+     // console.log("Error in get all Contest : " , error);
     }
   }
 
@@ -316,7 +316,7 @@ export const getTestCases = async(code) => {
         });
         return response.data;
     } catch (error) {
-        console.error("Error adding problem in contest:", error);
+      //  console.error("Error adding problem in contest:", error);
         throw error; // Optionally, throw the error for handling in the calling code
     }
 };
@@ -332,7 +332,7 @@ export const sendRatings = async(payload) => {
     })
      return response;
   }catch(error){
-    console.error("Error adding rating in contest:", error);
+   // console.error("Error adding rating in contest:", error);
         throw error; // Optionally, throw the error for handling in the calling code
   }
 }

@@ -7,6 +7,7 @@ import { SpinnerLoader } from '../component';
 
 
 
+
 const Login = () => {
   const { fetchUserProfile } = useContext(UserContext);
  
@@ -25,23 +26,25 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const response = await checkData(userInput);
-      if (response.success) {
-        console.log("Checkers :", response.existUser);
-     fetchUserProfile();
-     setLoading(false);
-        navigate('/');
-      } else {
-        console.error('Login failed:', response.message);
-      }
-    } catch (err) {
-      console.error('Error:', err);
+  
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const response = await checkData(userInput);
+    if (response.success) {
+     // console.log("Checkers :", response.existUser);
+   fetchUserProfile();
+   setLoading(false);
+      navigate('/');
+    } else {
+      console.error('Login failed:', response.message);
     }
-  };
+  } catch (err) {
+    console.error('Error:', err);
+  }
+};
+
 
   return (
     <div className="Login">
