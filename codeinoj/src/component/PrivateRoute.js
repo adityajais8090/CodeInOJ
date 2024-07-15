@@ -29,7 +29,7 @@ const PrivateRoute = ({ children }) => {
     };
 
     fetchUser();
-  }, [user, fetchUserProfile]);
+  }, [user]);
 
   if (loading) {
     return <div><SpinnerLoader/></div>; // Display a loading indicator while fetching user profile
