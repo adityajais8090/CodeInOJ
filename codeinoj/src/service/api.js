@@ -15,6 +15,7 @@ export const uploadData = async (data) => {
     try {
         //store the response
         const response = await axios.post(`${API_URL}/register`, data , {
+          withCredentials : true,
             headers: {
                 "Content-Type": "application/json",
             },
