@@ -117,8 +117,8 @@ app.post("/login", async (req, res) => {
 
         // Store it in cookie
         const options = {
+          path : "/",
             maxAge: 24 * 60 * 60 * 1000, // 1 day
-            httpOnly: true, 
             secure : true,
             sameSite : 'none',
             //secure: process.env.NODE_ENV === 'production' // Ensure the cookie is sent over HTTPS in production
