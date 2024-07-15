@@ -10,7 +10,7 @@ export const auth = async (req, res, next) => {
         // Access token from cookie
         const token = req.cookies.token;
 
-        console.log("Auth Token :", req.cookies.token);
+        //console.log("Auth Token :", req.cookies.token);
        
 
         if (!token) {
@@ -45,7 +45,7 @@ export const auth = async (req, res, next) => {
 
 export const authAdmin = async (req, res, next) => {
     try {
-        console.log(req);
+        
         // Access token from cookie
         const token = req.cookies.token;
 
