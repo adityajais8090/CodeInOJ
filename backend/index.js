@@ -14,7 +14,7 @@ const app = express();
 
 //middleware ,we used to get accept our data from frontend
 app.use(cors({
-    origin: 'http://localhost:3000', // Update with your frontend domain
+    origin: process.env.FRONTEND_URL, // Update with your frontend domain
     credentials: true // Allow credentials (cookies)
 }));
 app.use(express.json());
