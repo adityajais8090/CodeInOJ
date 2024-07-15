@@ -101,14 +101,16 @@ const Register = () => {
                   </div>
                   <div className="form-group">
                     <label htmlFor="exampleInputRole">Role</label>
-                    <input type="text"
+                    <select
                       className="form-control"
                       id="exampleInputRole"
                       name="role"
-                      placeholder="Role"
                       value={user.role}
                       onChange={handleInput}
-                    />
+                    >
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
                   </div>
                   <div className="form-group form-check">
                     <input type="checkbox" className="form-check-input" id="exampleCheck1"></input>
