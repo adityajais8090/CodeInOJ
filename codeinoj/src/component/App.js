@@ -21,43 +21,43 @@ function App() {
           <Route
             path="/profile"
             element={
-              <PrivateRoute>
+              
                 <Profile />
-              </PrivateRoute>
+              
             }
           />
           <Route
             path="/problemset/problem/:code"
             element={
-              <PrivateRoute>
+             
                 <Problem />
-              </PrivateRoute>
+              
             }
           />
           <Route
             path="/contests/:contestCode"
             element={
-              <PrivateRoute>
+              
                 <Contest />
-              </PrivateRoute>
+              
             }
           />
           <Route
             path="/admin"
             element={
-              <PrivateRoute>
+              
                 <Admin />
-              </PrivateRoute>
+              
             }
           />
           <Route path="/problemset" element={
-            <PrivateRoute>
+            
             <Problemset />
-              </PrivateRoute>} />
+              } />
           <Route path="/contest" element={
-            <PrivateRoute>
+           
             <Contest />
-              </PrivateRoute>
+             
             } />
         </Routes>
       </Router>
