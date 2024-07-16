@@ -171,6 +171,13 @@ app.delete('/logout', auth, (req, res) => {
   
       // Fetch the user using the token
       const existUser = await User.findOne({ token });
+      if(!existUser){
+        res.status(404).json({
+          success: false,
+          status: 404,
+          message : "User not found",
+        });
+      }
   
       // Send the profile data as JSON response
       res.status(200).json({
