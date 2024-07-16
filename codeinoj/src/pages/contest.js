@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/contest.css';
 import { getAllContest, getProblems, sendRatings } from '../service/api';
-import UserContext from '../context/user/userContext';
+import { useAuth } from '../context/auth/authState';
+
 import { ContestDetails, ProblemList, Timer, RealTimeRatings, SpinnerLoader } from '../component/index';
 
 const Contest = () => {
@@ -15,7 +16,9 @@ const Contest = () => {
   const [isContestEnd, setIsContestEnd] = useState(false);
   const navigate = useNavigate();
 
-  const { user, fetchUserProfile } = useContext(UserContext);
+  const { user, loading } = useAuth();
+
+ 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,11 +71,7 @@ const Contest = () => {
     fetchData();
   }, [contestCode]);
 
-  useEffect(() => {
-    if (!user) {
-      fetchUserProfile();
-    }
-  }, [user, fetchUserProfile]);
+ 
 
   const handleTimerStart = () => {
     if(isContestActive) {
@@ -119,6 +118,11 @@ const Contest = () => {
 
   if (!contest) {
     return <div>Contest not found.</div>;
+  }
+
+  if (loading) {
+    // You can return a loading spinner or null while loading
+    return <div><SpinnerLoader/></div>;
   }
 
   return (

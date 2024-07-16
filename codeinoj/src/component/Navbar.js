@@ -1,35 +1,30 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import UserContext from '../context/user/userContext';
+
+import { useAuth } from '../context/auth/authState';
 import { getProfile, getAdmin, delSession } from '../service/api';
 import SpinnerLoader from './SpinnerLoader';
 
 
+
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user, fetchUserProfile } = useContext(UserContext);
+  const { user , loading } = useAuth();
+  const { logout } = useAuth();
   const navbarCollapseRef = useRef(null);
 
-  useEffect(() => {
-    if (!user) {
-      fetchUserProfile();
-    }
-  }, [user, fetchUserProfile]);
+ 
 
 
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      const response = await delSession();
-    //  console.log("Response while logout:", response);
-      if (response.success) {
-        
-        window.location.href = '/login';
-      }
+      await logout();
     } catch (err) {
-    //  console.log("Error while logout:", err);
+      console.error("Error while logout:", err);
     }
   };
+
   
   
 
@@ -69,6 +64,11 @@ const Navbar = () => {
       navbarCollapse.classList.remove('show');
     }
   };
+
+  if (loading) {
+    // You can return a loading spinner or null while loading
+    return <div><SpinnerLoader/></div>;
+  }
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">

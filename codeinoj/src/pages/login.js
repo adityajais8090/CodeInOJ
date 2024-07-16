@@ -1,22 +1,38 @@
 import '../styles/login.css';
-import { useState , useContext } from 'react';
+import { useState , useEffect, useContext } from 'react';
 import { checkData } from '../service/api';
 import { useNavigate } from 'react-router-dom';
-import UserContext from '../context/user/userContext';
+
+import { useAuth } from '../context/auth/authState';
 import { SpinnerLoader } from '../component';
 
 
 
 
+
 const Login = () => {
-  const { fetchUserProfile } = useContext(UserContext);
- 
- const navigate = useNavigate();
+
+  const {isLoggedIn, errorl, login} = useAuth();
  const [loading, setLoading ] = useState();
   const [userInput, setUserInput] = useState({
     email: "",
     password: "",
   });
+
+
+  const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            console.log("login is ",isLoggedIn)
+           
+            setLoading(false);
+            return navigate("/");
+        }
+    }, [isLoggedIn]);
+
+
+ 
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -31,15 +47,12 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   try {
-    const response = await checkData(userInput);
-    if (response.success) {
-     console.log("Checkers :", response.existUser);
-   fetchUserProfile();
-   setLoading(false);
-      navigate('/');
-    } else {
-      console.error('Login failed:', response.message);
-    }
+     await login(userInput);
+
+     if(errorl){
+      console.log("Error while login", errorl);
+     }
+  
   } catch (err) {
     console.error('Error:', err);
   }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import '../styles/compiler.css';
-import UserContext from '../context/user/userContext';
+
 import { runOutput, getTestCases, postSubmissions, getSubmitResult } from '../service/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExpand, faPlay, faUpload } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +11,8 @@ import 'codemirror/theme/dracula.css';
 import 'codemirror/addon/edit/closebrackets';
 import 'codemirror/addon/edit/matchbrackets';
 import CodeMirror from 'codemirror';
+import { useAuth } from '../context/auth/authState';
+import { SpinnerLoader } from '../component';
 
 const Compiler = ({ problem, initialCode }) => {
     
@@ -28,7 +30,9 @@ const Compiler = ({ problem, initialCode }) => {
     const [stderr, setStderr] = useState('');
     const [wrongOutput, setWrongOutput] = useState(false);
 
-    const { user, fetchUserProfile } = useContext(UserContext);
+    const { user, loading } = useAuth();
+
+    
     
 
     useEffect(() => {
@@ -156,6 +160,11 @@ const Compiler = ({ problem, initialCode }) => {
           //  console.log("here is my stderr :", stderr);
         }
     };
+
+    if (loading) {
+        // You can return a loading spinner or null while loading
+        return <div><SpinnerLoader/></div>;
+      }
 
     return (
         <div className="compiler-container">

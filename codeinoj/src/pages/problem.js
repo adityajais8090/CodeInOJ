@@ -1,6 +1,6 @@
 import '../styles/problem.css';
 import React, { useEffect, useState, useContext } from 'react';
-import UserContext from '../context/user/userContext';
+import { useAuth } from '../context/auth/authState';
 import { useParams } from 'react-router-dom';
 import { getTestCases } from '../service/api';
 import Compiler from './compiler';
@@ -9,7 +9,7 @@ import { DescriptionCard, SubmissionCard, AllSubmissionsCard, EditorialCard, Spi
 
 const Problem = () => {
   const { code } = useParams();
-  const { user, fetchUserProfile } = useContext(UserContext);
+  const { user, loading } = useAuth();
 
   const initialCode = `// Your First C++ Program
     #include <bits/stdc++.h>
@@ -73,11 +73,9 @@ const Problem = () => {
       }
     };
 
-    if (!user) {
-      fetchUserProfile();
-    }
+   
     fetchTestCases();
-  }, [user, fetchUserProfile, code]);
+  }, [user, code]);
 
   const handleDescriptionClick = () => {
     setShowDescription(true);
@@ -112,6 +110,11 @@ const Problem = () => {
     setShowAllSubmissions(true);
     setLoadingAllSubmissions(false);
   };
+
+  if (loading) {
+    // You can return a loading spinner or null while loading
+    return <div><SpinnerLoader/></div>;
+  }
 
   return (
     <div className="Problem" style={{ backgroundColor: '#eee', minHeight: '120vh' }}>

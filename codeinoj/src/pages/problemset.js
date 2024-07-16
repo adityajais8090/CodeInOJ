@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/problemset.css';
 import { getProblemSet , getSubmission } from '../service/api';
-import UserContext from '../context/user/userContext';
+import { useAuth } from '../context/auth/authState';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +10,7 @@ import { CircularMetricsCard, SubmissionStatus, Skills, SpinnerLoader } from '..
 
 const Problemset = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const [loadingdata, setLoading] = useState(true);
   const [problems, setProblems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortedProblems , setSortedProblems] = useState([]);
@@ -23,7 +23,7 @@ const Problemset = () => {
   const [ solvedHard ,setSolvedHard] = useState(0);
 
   
-  const { user, fetchUserProfile } = useContext(UserContext);
+  const { user, loading } = useAuth();
 
 
 
@@ -40,9 +40,7 @@ const Problemset = () => {
         console.error('Error fetching problems:', error);
       }
     };
-    if (!user) {
-      fetchUserProfile();
-    }
+   
     fetchData();
 
     
@@ -173,13 +171,16 @@ const Problemset = () => {
     setSortedProblems(sortedHard);
   };
 
- 
+  if (loading) {
+    // You can return a loading spinner or null while loading
+    return <div><SpinnerLoader/></div>;
+  }
   
 
   return (
     <>
     <div>
-    {loading ? <SpinnerLoader /> :
+    {loadingdata ? <SpinnerLoader /> :
       <div className="container py-2 px-2">
         <div className="row">
         <div className="col-lg-9">

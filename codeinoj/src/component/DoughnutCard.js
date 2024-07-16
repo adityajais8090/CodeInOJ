@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/problemset.css';
 import { getProblemSet, getSubmission } from '../service/api';
-import UserContext from '../context/user/userContext';
+import { useAuth } from '../context/auth/authState';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -25,9 +25,9 @@ const CircularMetricsCard = () => {
   const [solvedEasy, setSolvedEasy] = useState(0);
   const [solvedMedium, setSolvedMedium] = useState(0);
   const [solvedHard, setSolvedHard] = useState(0);
-  const [ loading , setLoading] = useState(true);
+  const [ loadingdata , setLoading] = useState(true);
 
-  const { user, fetchUserProfile } = useContext(UserContext);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,9 +41,7 @@ const CircularMetricsCard = () => {
       }
     };
 
-    if (!user) {
-      fetchUserProfile();
-    }
+   
     fetchData();
   }, [user]);
 
@@ -107,7 +105,7 @@ const CircularMetricsCard = () => {
   }, [problems]);
 
   if (!problems) {
-    return <div>Loading...</div>; // Show a loading indicator while problems are fetched
+    return <div><SpinnerLoader/></div>; // Show a loading indicator while problems are fetched
   }
 
   const data = {
@@ -143,7 +141,7 @@ const CircularMetricsCard = () => {
 
   return (
  <div>
-    {loading ? <SpinnerLoader/> : 
+    {loadingdata && loading ? <SpinnerLoader/> : 
     <div className="card mb-4">
       <div className="card-body text-center">
         <div className="row">

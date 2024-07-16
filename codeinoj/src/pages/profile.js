@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UserContext from '../context/user/userContext';
+import { useAuth } from '../context/auth/authState';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { UserProblemRow, SubmissionStatus, CircularMetricsCard, Skills, SpinnerLoader } from '../component';
 import { getSubmission, getProblemSet } from '../service/api';
 
 const Profile = () => {
-  const { user, fetchUserProfile } = useContext(UserContext);
+  const { user, loading } = useAuth();
   const [submitProblem, setSubmitProblem] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state to manage loading state
+  const [loadingdata, setLoading] = useState(true); // Add loading state to manage loading state
 
   const navigate = useNavigate();
 
@@ -49,14 +49,12 @@ const Profile = () => {
       }
     };
 
-    if (!user) {
-      fetchUserProfile();
-    } else {
+    
       fetchData(); // Call fetchData only when user is available
-    }
-  }, [user, fetchUserProfile]);
+    
+  }, [user]);
 
-  if (!user || loading) {
+  if (loadingdata && loading) {
     return <div><SpinnerLoader/></div>;
   }
 
