@@ -22,7 +22,7 @@ const Contest = () => {
       try {
         const response = await getAllContest();
         const matchedContest = response.data.find(contest => contest.contestCode === parseInt(contestCode));
-
+         console.log("Matched Contest :", matchedContest);
         setContest(matchedContest);
         setLoadingContest(false);
 
@@ -99,7 +99,7 @@ const Contest = () => {
     }
     try {
       const response = await sendRatings(payload);
-      //console.log("Response from ratings:", response);
+      console.log("Response from ratings:", response);
     } catch (err) {
      // console.log("Error updating ratings:", err);
     }

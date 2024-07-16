@@ -36,11 +36,11 @@ export const checkData = async (data) => {
                 "Content-Type": "application/json",
             },
         });
-       // console.log("here is my response data : ", response.data);
+       console.log("here is my response data : ", response.data);
        
         return response.data;
     } catch (err) {
-       // console.error("Error in Upload Login data: " + err);
+       console.error("Error in Upload Login data: " + err);
        
     }
 }

@@ -33,7 +33,7 @@ const handleSubmit = async (e) => {
   try {
     const response = await checkData(userInput);
     if (response.success) {
-     // console.log("Checkers :", response.existUser);
+     console.log("Checkers :", response.existUser);
    fetchUserProfile();
    setLoading(false);
       navigate('/');
