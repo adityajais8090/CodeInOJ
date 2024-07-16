@@ -24,7 +24,7 @@ const Navbar = () => {
     //  console.log("Response while logout:", response);
       if (response.success) {
         
-        window.location.href = '/';
+        window.location.href = '/login';
       }
     } catch (err) {
     //  console.log("Error while logout:", err);
