@@ -10,7 +10,7 @@ import SpinnerLoader from './SpinnerLoader';
 const Navbar = () => {
   const navigate = useNavigate();
   const { user , loading } = useAuth();
-  const { logout } = useAuth();
+  const { isLoggedIn , logout } = useAuth();
   const navbarCollapseRef = useRef(null);
 
  
@@ -104,7 +104,7 @@ const Navbar = () => {
             )}
           </ul>
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            {!user && (
+            {!isLoggedIn && (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/login" onClick={handleNavLinkClick}>Login</Link>
@@ -114,7 +114,7 @@ const Navbar = () => {
                 </li>
               </>
             )}
-            {user && (
+            {isLoggedIn && (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" onClick={e => { handleProfilePage(e); handleNavLinkClick(); }}>{user.firstname}</Link>
