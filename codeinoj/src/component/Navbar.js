@@ -20,6 +20,7 @@ const Navbar = () => {
     e.preventDefault();
     try {
       await logout();
+      navigate('/login');
     } catch (err) {
       console.error("Error while logout:", err);
     }

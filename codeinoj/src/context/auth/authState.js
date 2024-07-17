@@ -37,7 +37,7 @@ export const AuthState = ({children}) => {
             if (res.success) {
                 setUser(res.user);
                 setIsLoggedIn(true);
-                window.location.href = '/';
+                
             } else {
                 setErrorl(res.error);
             }
@@ -52,7 +52,7 @@ export const AuthState = ({children}) => {
             if (res.success) {
                 setUser(null);
                 setIsLoggedIn(false);
-                window.location.href = '/login'
+                
             }
         } catch (err) {
             console.error("Logout failed", err);
