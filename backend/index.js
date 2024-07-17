@@ -158,7 +158,7 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.delete('/logout', auth, (req, res) => {
+app.delete('/logout', (req, res) => {
     try {
       console.log("Logout Successfully :");
 
