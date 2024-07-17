@@ -14,6 +14,7 @@ const app = express();
 
 //middleware ,we used to get accept our data from frontend
 const prodOrigins = [
+  process.env.FRONTEND_URL_2,
   process.env.FRONTEND_URL
 
 ];
