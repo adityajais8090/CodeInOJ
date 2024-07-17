@@ -13,10 +13,28 @@ dotenv.config();
 const app = express();
 
 //middleware ,we used to get accept our data from frontend
-app.use(cors({
-    origin: process.env.FRONTEND_URL, // Update with your frontend domain
-    credentials: true // Allow credentials (cookies)
-}));
+const prodOrigins = [
+  process.env.FRONTEND_URL
+
+];
+//   const devOrigin = ['http://localhost:5173'];
+const allowedOrigins = prodOrigins;
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error(`${origin} not allowed by cors`));
+        }
+     
+    },
+    optionsSuccessStatus: 200,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended : true }));
 app.use(cookieParser(process.env.SECRET_KEY));
@@ -119,7 +137,7 @@ app.post("/login", async (req, res) => {
         const options = {
           path: "/",
           maxAge: 24 * 60 * 60 * 1000, // 1 day
-          //httpOnly: true,
+          httpOnly: true,
           secure: true,
           sameSite: 'none',
           // secure: process.env.NODE_ENV === 'production' // Ensure the cookie is sent over HTTPS in production
