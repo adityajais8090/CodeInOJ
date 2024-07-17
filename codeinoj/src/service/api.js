@@ -53,10 +53,10 @@ export const delSession = async () => {
           "Content-Type": "application/json",
       },
   } );
- // console.log(response);
+ console.log(response);
   return response.data;
   }catch(err){
-    //console.log("Error in deleting Session :", err);
+  console.log("Error in deleting Session :", err);
     return err;
   }
 }
