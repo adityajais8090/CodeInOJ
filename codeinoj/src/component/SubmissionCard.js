@@ -6,6 +6,7 @@ import SpinnerLoader from './SpinnerLoader';
 
 const SubmissionCard = ({ problemId, userId }) => {
   const [submissions, setSubmissions] = useState([]);
+  const[allSubmissions, setAllSubmissions] = useState([]);
   const [selectedCode, setSelectedCode] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -14,6 +15,7 @@ const SubmissionCard = ({ problemId, userId }) => {
       try {
         const response = await getSubmission(); // Replace with actual API function
        // console.log("All problem Submission : ", response.data.submissions);
+       setAllSubmissions(response.data.submissions);
         if (response.data.success) {
           const filteredSubmissions = response.data.submissions.filter(submission => {
             return submission.problemId === problemId && submission.userId === userId;
@@ -28,10 +30,6 @@ const SubmissionCard = ({ problemId, userId }) => {
     };
 
     fetchSubmissions();
-
-    
-     
-   
 
 
   }, [problemId, userId]);

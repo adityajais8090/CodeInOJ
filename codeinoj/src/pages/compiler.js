@@ -29,8 +29,9 @@ const Compiler = ({ problem, initialCode }) => {
     const [currentTestCase, setCurrentTestCase] = useState(0);
     const [stderr, setStderr] = useState('');
     const [wrongOutput, setWrongOutput] = useState(false);
-
+    const[ resultLoading, setResultLoading] = useState(false);
     const { user, loading } = useAuth();
+    const SpinnerLoaderText = "Loading...";
 
     
     
@@ -93,6 +94,7 @@ const Compiler = ({ problem, initialCode }) => {
             };
     
             try {
+                setResultLoading(true);
                 const response = await getSubmitResult(payload);
                // console.log("Here is my submission response:", response);
     
@@ -103,6 +105,7 @@ const Compiler = ({ problem, initialCode }) => {
                 setResults(result);
                 setCurrentTestCase(response.count);
                 setStderr('');
+                setResultLoading(false);
     
                // console.log("currTestcase :", response.count);
                 //console.log("here is Results :", result);
@@ -119,7 +122,9 @@ const Compiler = ({ problem, initialCode }) => {
                 }
             } catch (error) {
                 console.error("Error running code:", error);
+                
                 setStderr(error?.data?.error?.stderr || error.message || "Unknown error occurred");
+                setResultLoading(false);           
             }
         } catch (err) {
             console.error("Error fetching test cases:", err);
@@ -150,13 +155,16 @@ const Compiler = ({ problem, initialCode }) => {
             input,
         };
         try {
+            setResultLoading(true);
             const response = await runOutput(payload);
            // console.log("Here is my response :" , response);
             setOutput(response.output);
             setStderr('');
+            setResultLoading(false);
         } catch (error) {
           //  console.log("Error running code:", error.data);
             setStderr(error.data.error || error.message || "Unknown error occurred"); 
+            setResultLoading(false);
           //  console.log("here is my stderr :", stderr);
         }
     };
@@ -249,21 +257,32 @@ const Compiler = ({ problem, initialCode }) => {
                                     <div className="form-group mb-0">
                                         <label htmlFor="output">Output</label>
                                         <div className="input-group">
+                                        {resultLoading?  (
+                                                <div className="spinner-overlay">
+                                                    <SpinnerLoader />
+                                                </div>
+                                            ) :(
+                                                <>
                                             <textarea
                                                 className={`form-control expanding-textarea ${outputExpanded ? 'expanded' : ''}`}
                                                 id="output"
-                                                value={output}
+                                                value={resultLoading ? SpinnerLoaderText : output}
                                                 readOnly
                                                 rows={outputExpanded ? "3" : "1"}
                                                 aria-label="Output Text"
                                             ></textarea>
                                             <button
-                                                className="btn btn-outline-secondary"
-                                                type="button"
-                                                onClick={handleExpandOutput}
-                                            >
-                                                <FontAwesomeIcon icon={faExpand} />
-                                            </button>
+                                            className="btn btn-outline-secondary"
+                                            type="button"
+                                            onClick={handleExpandOutput}
+                                        >
+                                            <FontAwesomeIcon icon={faExpand} />
+                                        </button>
+                                        </>
+                                        )
+                                        }
+                                             
+                                           
                                         </div>
                                     </div>
                                 </form>
@@ -272,15 +291,22 @@ const Compiler = ({ problem, initialCode }) => {
                                 <div className="form-group mb-0">
                                     <label htmlFor="output" style={{ color: 'red' }}>Error</label>
                                     <div className="input-group">
+                                    {resultLoading?  (
+                                                <div className="spinner-overlay">
+                                                    <SpinnerLoader />
+                                                </div>
+                                            ) :(
+                                                <>
                                         <textarea
                                             className={`form-control expanding-textarea ${outputExpanded ? 'expanded' : ''}`}
                                             id="output"
-                                            value={stderr}
+                                             value={resultLoading ? SpinnerLoaderText : stderr}
                                             readOnly
                                             rows={outputExpanded ? "10" : "1"}
                                             aria-label="Output Text"
                                             style={{ borderColor: 'red' }} // Optionally set text and border color to red
                                         ></textarea>
+
                                         <button
                                             className="btn btn-outline-secondary"
                                             type="button"
@@ -288,6 +314,12 @@ const Compiler = ({ problem, initialCode }) => {
                                         >
                                             <FontAwesomeIcon icon={faExpand} />
                                         </button>
+                                        </>
+                                        
+                                            )
+                                            }
+
+                                        
                                     </div>
                                 </div>
                             </form>
@@ -301,6 +333,11 @@ const Compiler = ({ problem, initialCode }) => {
                                <>
                                <div>
                                    <h4>Test Result</h4>
+                                   {resultLoading && (
+                                        <div className="spinner-overlay">
+                                            <SpinnerLoader />
+                                        </div>
+                                            )}
                                    <p>{currentTestCase} / {totalTestCases} Test Cases</p>
                            
                                    {currentTestCase === totalTestCases ? (

@@ -9,6 +9,7 @@ export const AuthState = ({children}) => {
     const [error, setError] = useState(null);
     const [errorl, setErrorl] = useState(null);
     const [loading, setLoading] = useState(true);
+    
    
 
     useEffect(() => {
@@ -51,8 +52,7 @@ export const AuthState = ({children}) => {
             const res = await delSession();
             if (res.success) {
                 setUser(null);
-                setIsLoggedIn(false);
-                
+                setIsLoggedIn(false); 
             }
         } catch (err) {
             console.error("Logout failed", err);

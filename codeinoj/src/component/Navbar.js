@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import '../styles/navbar.css';
 
 import { useAuth } from '../context/auth/authState';
 import { getProfile, getAdmin, delSession } from '../service/api';
@@ -66,13 +67,13 @@ const Navbar = () => {
     }
   };
 
-  if (loading) {
-    // You can return a loading spinner or null while loading
-    return <div><SpinnerLoader/></div>;
-  }
+  
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    <>
+    {
+      loading ?  <div className="spinner-container"><SpinnerLoader /></div> : 
+    (<nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">CodeInOJ</Link>
         <button
@@ -104,7 +105,7 @@ const Navbar = () => {
             )}
           </ul>
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            {!isLoggedIn && (
+            {!isLoggedIn ? (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/login" onClick={handleNavLinkClick}>Login</Link>
@@ -113,8 +114,7 @@ const Navbar = () => {
                   <Link className="nav-link" to="/register" onClick={handleNavLinkClick}>Register</Link>
                 </li>
               </>
-            )}
-            {isLoggedIn && (
+            ) : (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" onClick={e => { handleProfilePage(e); handleNavLinkClick(); }}>{user.firstname}</Link>
@@ -128,6 +128,9 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
+  )
+}
+  </>
   );
 };
 

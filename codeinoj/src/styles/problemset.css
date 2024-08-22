@@ -1,23 +1,205 @@
-.custom-row-style {
-    background-color: #FFFFFF;
-  }
-  
-  .even-row {
-    background-color: #FFFFFF;
-  }
-  
-  .odd-row {
-    background-color: #F7F8FA;
-  }
+/* General container styling */
+.container {
+  padding: 0 15px;
+  background-color: #ffffff; /* Ensures container has a white background */
+}
 
 
-  .btn-white {
-    background-color: white !important;
-    color: black !important;
-    border: 1px solid #dcdcdc !important; /* Light gray border */
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+/* Header styling */
+.row-header {
+  background-color: #343a40; /* Dark background */
+  color: #ffffff; /* White text color */
+  font-weight: bold; /* Make text bold */
+  border-bottom: 2px solid #495057; /* Slightly lighter border at the bottom */
+  text-align: center; /* Center text alignment */
+}
+
+.row-header .col-6 {
+  padding: 1rem; /* Adjust padding as needed */
+}
+
+.row-header .text-center {
+  font-size: 1.1rem; /* Slightly larger font size */
+}
+
+/* Header column specific styling */
+.row-header .col-md-2 {
+  background-color: #495057; /* Slightly lighter background for columns */
+  border-radius: 5px; /* Rounded corners */
+}
+
+.row-header .col-md-6 {
+  background-color: #495057; /* Slightly lighter background for columns */
+  border-radius: 5px; /* Rounded corners */
+}
+
+
+
+.custom-padding {
+  padding: 0;
+}
+
+.custom-margin {
+  margin: 0;
+}
+
+.custom-bg {
+  background-color: transparent; /* or set to the desired color */
+}
+
+
+
+/* Row adjustments */
+.row {
+  margin: 0;
+}
+
+/* Dropdown button styling */
+.btn-white {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #dcdcdc;
 }
 
 .btn-white:hover {
-    background-color: #f8f9fa !important; /* Slightly darker white for hover effect */
+  background-color: #f0f0f0; /* Slightly darker white for hover effect */
+  color: #000000;
+  border-color: #dcdcdc; /* Keep border color consistent */
+}
+
+/* Dropdown menu styling */
+.dropdown-menu-end {
+  min-width: 160px;
+}
+
+.dropdown-item {
+  color: #333;
+  background-color: #ffffff; /* Ensure dropdown items blend with the background */
+}
+
+.dropdown-item:hover {
+  background-color: #e2e2e2; /* Hover effect */
+  color: #000000;
+}
+
+/* Input group styling */
+.input-group-text {
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+}
+
+#searchBar {
+  border: 1px solid #ced4da;
+  border-left: 0;
+}
+
+/* Row header styling */
+.row-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* Table row styling */
+.custom-row-style {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.custom-row-style.even-row {
+  background-color: #ffffff;
+}
+
+.custom-row-style.odd-row {
+  background-color: #f8f9fa;
+}
+
+/* Hover effect for table rows */
+.custom-row-style:hover {
+  background-color: #e2e2e2; /* Subtle hover effect */
+}
+
+/* Padding */
+.p-3 {
+  padding: 1rem;
+}
+
+/* Card styling */
+.card {
+  border: 1px solid #dee2e6;
+  border-radius: .375rem;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+/* Circular metrics card styling */
+.circular-metrics-card {
+  margin-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .col-lg-9,
+  .col-lg-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .table .row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .col-md-2,
+  .col-md-6,
+  .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* Column styling */
+.col-6,
+.col-md-2,
+.col-md-6 {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.col-md-2 {
+  flex: 0 0 16.6667%;
+  max-width: 16.6667%;
+}
+
+.col-md-6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: #007bff; /* Link color */
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #0056b3; /* Darker color on hover */
+}
+
+
+/* Define difficulty color classes */
+.difficulty-easy {
+  color: #28a745; /* Green for easy */
+}
+
+.difficulty-medium {
+  color: #ffc107; /* Amber for medium */
+}
+
+.difficulty-hard {
+  color: #dc3545; /* Red for hard */
 }

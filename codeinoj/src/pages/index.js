@@ -7,6 +7,7 @@ import Problem from "./problem";
 import Admin from "./admin"
 import Problemset from "./problemset";
 import Contest from "./contest";
+import AllSubmissions from "./submission";
 
 // export all pages 
-export {Home , Register, Login, Profile, Problem, Admin, Problemset, Contest};
+export {Home , Register, Login, Profile, Problem, Admin, Problemset, Contest, AllSubmissions};

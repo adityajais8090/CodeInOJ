@@ -91,7 +91,27 @@ export const getProfile = async () => {
     // console.log("Error in getting profile", err);
      return { success: false, message: 'Failed to fetch profile', Error : err };
   }
- }
+ };
+
+
+ export const getUser = async (payload) => {
+  try {
+    const response = await axios.get(`${API_URL}/userInfo`, {
+      params: payload, // Include payload as query parameters
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    // console.log("Response getProfile api : ", response.data);
+    return response.data;
+  } catch (err) {
+    // console.log("Error in getting profile", err);
+    return { success: false, message: 'Failed to fetch UserInfo', error: err };
+  }
+};
+
+ 
 
 export const getProblemSet = async () => {
   try {

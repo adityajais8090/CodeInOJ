@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/problemset.css';
-import { getProblemSet , getSubmission } from '../service/api';
+import { getProblemSet, getSubmission } from '../service/api';
 import { useAuth } from '../context/auth/authState';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,39 +13,39 @@ const Problemset = () => {
   const [loadingdata, setLoading] = useState(true);
   const [problems, setProblems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortedProblems , setSortedProblems] = useState([]);
+  const [sortedProblems, setSortedProblems] = useState([]);
   const [allSubmissions, setAllSubmissions] = useState([]);
-  const [ totaleasy, setEasy ] = useState([]);
-  const [ totalmedium , setMedium ] = useState(0);
-  const [ totalhard, setHard ] = useState(0);
-  const [ solvedEasy ,setSolvedEasy] = useState(0);
-  const [ solvedMedium ,setSolvedMedium] = useState(0);
-  const [ solvedHard ,setSolvedHard] = useState(0);
+  const [totaleasy, setEasy] = useState([]);
+  const [totalmedium, setMedium] = useState(0);
+  const [totalhard, setHard] = useState(0);
+  const [solvedEasy, setSolvedEasy] = useState(0);
+  const [solvedMedium, setSolvedMedium] = useState(0);
+  const [solvedHard, setSolvedHard] = useState(0);
 
-  
+
   const { user, loading } = useAuth();
 
 
 
-  
+
   useEffect(() => {
 
     const fetchData = async () => {
       try {
         const response = await getProblemSet();
-       // console.log("Response from ProblemSet:", response);
+        // console.log("Response from ProblemSet:", response);
         setProblems(response);
         setSortedProblems(response);
       } catch (error) {
         console.error('Error fetching problems:', error);
       }
     };
-   
+
     fetchData();
 
-    
-      setLoading(false);
-   
+
+    setLoading(false);
+
 
   }, [user]);
 
@@ -96,27 +96,27 @@ const Problemset = () => {
     if (problems.length > 0) {
       fetchSubmission();
     }
-   
-      setLoading(false);
-   
+
+    setLoading(false);
+
 
   }, [user, problems]);
-  
+
   useEffect(() => {
     const sortedEasy = problems.filter(problem => problem.difficulty.includes("easy"));
     setEasy(sortedEasy.length);
-  
+
     const sortedMedium = problems.filter(problem => problem.difficulty.includes("medium"));
     setMedium(sortedMedium.length);
-  
+
     const sortedHard = problems.filter(problem => problem.difficulty.includes("hard"));
     setHard(sortedHard.length);
-   
-      setLoading(false);
-    
+
+    setLoading(false);
+
 
   }, [problems]);
-  
+
 
 
   const handleProblem = (problem, event) => {
@@ -173,147 +173,166 @@ const Problemset = () => {
 
   if (loading) {
     // You can return a loading spinner or null while loading
-    return <div><SpinnerLoader/></div>;
+    return <div><SpinnerLoader /></div>;
   }
-  
+
 
   return (
     <>
-    <div>
-    {loadingdata ? <SpinnerLoader /> :
-      <div className="container py-2 px-2">
-        <div className="row">
-        <div className="col-lg-9">
-          <div className="row align-items-center mb-2 p-2">
-          <div className="col-md-2">
-        <div className="btn-group">
-            <button
-                type="button"
-                className="btn btn-white:hover btn-white dropdown-toggle"
-                data-bs-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                aria-label="Default select example"
-            >
-                Difficulty
-            </button>
-            <ul className="dropdown-menu dropdown-menu-end">
-                <li><button className="dropdown-item" type="button" onClick = {sortEasy}>Easy</button></li>
-                <li><button className="dropdown-item" type="button" onClick = {sortMedium}>Medium</button></li>
-                <li><button className="dropdown-item" type="button" onClick = {sortHard}>Hard</button></li>
-            </ul>
-        </div>
-    </div>
-
-    <div className="col-md-2">
-        <div className="btn-group">
-            <button
-                type="button"
-                className="btn btn-white:hover btn-white dropdown-toggle"
-                data-bs-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                aria-label="Default select example"
-            >
-                Status
-            </button>
-            <ul className="dropdown-menu dropdown-menu-end">
-                <li><button className="dropdown-item" type="button">Solved</button></li>
-                <li><button className="dropdown-item" type="button">Attempted</button></li>
-                <li><button className="dropdown-item" type="button">Unsolved</button></li>
-            </ul>
-        </div>
-    </div>
-
-    <div className="col-md-2">
-        <div className="btn-group">
-            <button
-                type="button"
-                className="btn btn-white:hover btn-white dropdown-toggle"
-                data-bs-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                aria-label="Default select example"
-            >
-                Tags
-            </button>
-            <ul className="dropdown-menu dropdown-menu-end">
-                <li><button className="dropdown-item" type="button" onClick = {sortArray}>Array</button></li>
-                <li><button className="dropdown-item" type="button" onClick={sortString}>String</button></li>
-                <li><button className="dropdown-item" type="button" onClick = {sortHash}>HashTable</button></li>
-            </ul>
-        </div>
-    </div>
-
-            <div className="col-md-4">
-        <div className="input-group">
-            <span className="input-group-text" id="searchIcon">
-               <FontAwesomeIcon icon={faSearch} />
-            </span>
-            <input
-                type="text"
-                className="form-control"
-                id="searchBar"
-                placeholder="Search..."
-                onChange = {handleSearch}
-                aria-label="Search"
-                aria-describedby="searchIcon"
-            />
-        </div>
-    </div>
-        </div>
-
-      <div className="row-header row custom-row-style">
-        <div className="col-6 col-md-2 p-3">
-          <div className="text-center">Status</div>
-        </div>
-        <div className="col-6 col-md-6 p-3">Title</div>
-        <div className="col-6 col-md-2 p-3">Difficulty</div>
-        <div className="col-6 col-md-2 p-3">Solution</div>
-      </div>
-      
-      <div className="table">
-        {sortedProblems.map((problem, index) => (
-          <div key={index} className={`row custom-row-style ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}>
-            <div className="col-6 col-md-2 p-3 text-center">
-            <SubmissionStatus problemId={problem._id} />
-            </div>
-            <div className={`col-6 col-md-6 p-3`}>
-              <a
-                className={`${index % 2 === 0 ? 'even-row' : 'odd-row'}`}
-                href="/problemset/problem"
-                onClick={(event) => handleProblem(problem, event)}
-              >
-                {`${problem.code}. ${problem.title}`}
-              </a>
-            </div>
-            <div className="col-6 col-md-2 p-3">
-              {problem.difficulty || "medium"}
-            </div>
-            <div className="col-6 col-md-2 p-3">
-            <SubmissionStatus problemId={problem._id} />
-            </div>
-          </div>
-        ))}
-      </div>
-      </div>
-      <div className="col-lg-3 p-2">
-
-            <CircularMetricsCard/>
-
-            <div className="card mb-4 mb-lg-0">
-              <div className="card-body mb-md-0">
-              <Skills user={user} />
+      <div>
+        {loadingdata ? <SpinnerLoader /> :
+         <div className="container py-2">
+         <div className="row">
+           <div className="col-lg-9">
+             <div style={{ display: "flex", justifyContent: "space-between", padding: "0px" }} className="mb-2 py-2">
+               <div className="col-md-2">
+                 <div className="btn-group">
+                   <button
+                     type="button"
+                     className="btn btn-white btn-white:hover dropdown-toggle"
+                     data-bs-toggle="dropdown"
+                     aria-haspopup="true"
+                     aria-expanded="false"
+                     aria-label="Default select example"
+                   >
+                     Difficulty
+                   </button>
+                   <ul className="dropdown-menu dropdown-menu-end">
+                     <li><button className="dropdown-item" type="button" onClick={sortEasy}>Easy</button></li>
+                     <li><button className="dropdown-item" type="button" onClick={sortMedium}>Medium</button></li>
+                     <li><button className="dropdown-item" type="button" onClick={sortHard}>Hard</button></li>
+                   </ul>
+                 </div>
+               </div>
+       
+               <div className="col-md-2">
+                 <div className="btn-group">
+                   <button
+                     type="button"
+                     className="btn btn-white btn-white:hover dropdown-toggle"
+                     data-bs-toggle="dropdown"
+                     aria-haspopup="true"
+                     aria-expanded="false"
+                     aria-label="Default select example"
+                   >
+                     Status
+                   </button>
+                   <ul className="dropdown-menu dropdown-menu-end">
+                     <li><button className="dropdown-item" type="button">Solved</button></li>
+                     <li><button className="dropdown-item" type="button">Attempted</button></li>
+                     <li><button className="dropdown-item" type="button">Unsolved</button></li>
+                   </ul>
+                 </div>
+               </div>
+       
+               <div className="col-md-2">
+                 <div className="btn-group">
+                   <button
+                     type="button"
+                     className="btn btn-white btn-white:hover dropdown-toggle"
+                     data-bs-toggle="dropdown"
+                     aria-haspopup="true"
+                     aria-expanded="false"
+                     aria-label="Default select example"
+                   >
+                     Tags
+                   </button>
+                   <ul className="dropdown-menu dropdown-menu-end">
+                     <li><button className="dropdown-item" type="button" onClick={sortArray}>Array</button></li>
+                     <li><button className="dropdown-item" type="button" onClick={sortString}>String</button></li>
+                     <li><button className="dropdown-item" type="button" onClick={sortHash}>HashTable</button></li>
+                   </ul>
+                 </div>
+               </div>
+       
+               <div className="col-md-4">
+                 <div className="input-group">
+                   <span className="input-group-text" id="searchIcon">
+                     <FontAwesomeIcon icon={faSearch} />
+                   </span>
+                   <input
+                     type="text"
+                     className="form-control"
+                     id="searchBar"
+                     placeholder="Search..."
+                     onChange={handleSearch}
+                     aria-label="Search"
+                     aria-describedby="searchIcon"
+                   />
+                 </div>
+               </div>
+             </div>
+       
+              <div className="row-header row custom-row-style">
+                <div className="col-6 col-md-2 p-3 text-center">
+                  Status
+                </div>
+                <div className="col-6 col-md-6 p-3">
+                  Title
+                </div>
+                <div className="col-6 col-md-2 p-3 text-center">
+                  Difficulty
+                </div>
+                <div className="col-6 col-md-2 p-3 text-center">
+                  Solution
+                </div>
               </div>
-            </div>
+       
+             <div className="table">
+               {sortedProblems.map((problem, index) => (
+                 <div key={index} className={`row custom-row-style ${index % 2 === 0 ? 'even-row' : 'odd-row'}`}>
+                   <div className="col-6 col-md-2 p-3 text-center">
+                     <SubmissionStatus problemId={problem._id} />
+                   </div>
+                   <div className={`col-6 col-md-6 p-3`}>
+                      <Link
+                        to={`/problemset/problem/${problem._id}`} // Adjust the URL path as needed
+                        onClick={(event) => handleProblem(problem, event)}
+                        className="text-decoration-none text-primary"
+                        style={{
+                          backgroundColor: "transparent" // Apply transparent background
+                        }}
+                      >
+                        {`${problem.code}. ${problem.title}`}
+                      </Link>
+                    </div>
+                    <div className="col-6 col-md-2 p-3 custom-bg">
+                      <span 
+                        style={{
+                          color: problem.difficulty === "easy" ? "#28a745" :
+                                problem.difficulty === "medium" ? "#ffc107" :
+                                "#dc3545",
+                          backgroundColor: "transparent" // Apply transparent background
+                        }}
+                      >
+                        {problem.difficulty || "medium"}
+                      </span>
+                    </div>
 
-      </div>
-      </div>
-      </div>
 
-}
-    </div>
-      
+                   <div className="col-6 col-md-2 p-3">
+                     <SubmissionStatus problemId={problem._id} />
+                   </div>
+                 </div>
+               ))}
+             </div>
+           </div>
+           <div className="col-lg-3 p-2">
+             <div className="circular-metrics-card">
+               <CircularMetricsCard />
+             </div>
+       
+             <div className="card mb-4 mb-lg-0">
+               <div className="card-body mb-md-0">
+                 <Skills user={user} />
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+       
+        }
+        </div>
     </>
   );
 };

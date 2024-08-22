@@ -29,7 +29,9 @@ const SubmissionStatus = ({ problemId }) => {
   }, [problemId]);
 
   if (status === 'passed') {
-    return <FontAwesomeIcon icon={faCheck} />; // Return a green check icon if submission passed
+    return <FontAwesomeIcon style={{
+      backgroundColor: "transparent" // Apply transparent background
+    }} icon={faCheck} />; // Return a green check icon if submission passed
   } else if (status === 'not-passed') {
     return ; // Return a red times icon if no passed submission found
   } else {

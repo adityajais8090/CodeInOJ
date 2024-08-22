@@ -1,0 +1,92 @@
+.timer-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .timer-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .timer-boxes {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .timer-box {
+    background-color: #ffd700; /* Yellow background */
+    padding: 15px;
+    border-radius: 8px;
+    width: 80px;
+    text-align: center;
+  }
+  
+  .timer-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .timer-label {
+    display: block;
+    font-size: 0.875rem;
+    color: #333;
+  }
+
+  
+  .ratings-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .ratings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .rating-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .rating-title {
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  .rating-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .rating-progress {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    height: 10px;
+    width: 100%;
+    position: relative;
+  }
+  
+  .rating-bar {
+    background-color: #4caf50; /* Change to your preferred color */
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  

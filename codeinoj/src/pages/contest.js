@@ -18,14 +18,14 @@ const Contest = () => {
 
   const { user, loading } = useAuth();
 
- 
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getAllContest();
         const matchedContest = response.data.find(contest => contest.contestCode === parseInt(contestCode));
-         console.log("Matched Contest :", matchedContest);
+        console.log("Matched Contest :", matchedContest);
         setContest(matchedContest);
         setLoadingContest(false);
 
@@ -62,7 +62,7 @@ const Contest = () => {
           }
         }
       } catch (error) {
-       // console.log("Error in fetching data:", error);
+        // console.log("Error in fetching data:", error);
         setLoadingContest(false);
         setLoadingProblems(false);
       }
@@ -71,10 +71,10 @@ const Contest = () => {
     fetchData();
   }, [contestCode]);
 
- 
+
 
   const handleTimerStart = () => {
-    if(isContestActive) {
+    if (isContestActive) {
       //console.log("Contest Started");
     }
   }
@@ -100,7 +100,7 @@ const Contest = () => {
       const response = await sendRatings(payload);
       console.log("Response from ratings:", response);
     } catch (err) {
-     // console.log("Error updating ratings:", err);
+      // console.log("Error updating ratings:", err);
     }
   };
 
@@ -113,7 +113,7 @@ const Contest = () => {
   };
 
   if (loadingContest || loadingProblems) {
-    return <div><SpinnerLoader/></div>;
+    return <div><SpinnerLoader /></div>;
   }
 
   if (!contest) {
@@ -122,7 +122,7 @@ const Contest = () => {
 
   if (loading) {
     // You can return a loading spinner or null while loading
-    return <div><SpinnerLoader/></div>;
+    return <div><SpinnerLoader /></div>;
   }
 
   return (
@@ -134,7 +134,7 @@ const Contest = () => {
             {(!isContestActive && !isContestEnd) && (
               <div className="col-md-12">
                 <h5 className="card-title">Contest will start in:</h5>
-                <Timer startTime={new Date(contest.startTime).getTime() / 1000} endTime={new Date(contest.endTime).getTime() / 1000}  onEnd={handleTimerStart}/>
+                <Timer startTime={new Date(contest.startTime).getTime() / 1000} endTime={new Date(contest.endTime).getTime() / 1000} onEnd={handleTimerStart} />
               </div>
             )}
           </div>
@@ -150,12 +150,11 @@ const Contest = () => {
             )}
             {isContestEnd && (
               <div className='mt-4'>
-                <h5>Contest End</h5>
-                <h5>Stay tuned for results</h5>
-                <>
+                <div>
+                  <h6 style={{ color: "red" }}>Contest End</h6>
+                  <h6>Stay tuned for results!</h6>
+                </div>
                 <ProblemList problems={problems} getSubmissionStatus={getSubmissionStatus} />
-                
-              </>
               </div>
             )}
           </div>

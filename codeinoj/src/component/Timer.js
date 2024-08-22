@@ -1,11 +1,10 @@
-// Timer.jsx
 import React, { useState, useEffect, useRef } from 'react';
+
 
 const Timer = ({ startTime, endTime, onEnd }) => {
   const [timer, setTimer] = useState(0);
   const intervalRef = useRef(null);
 
-  
   useEffect(() => {
     const currentTime = Math.floor(Date.now() / 1000);
     let remainingTime;
@@ -40,14 +39,27 @@ const Timer = ({ startTime, endTime, onEnd }) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
-    return `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    return { h, m, s };
   };
 
+  const { h, m, s } = formatTime(timer);
+
   return (
-    <div className="card mb-3">
-      <div className="card-body">
-        <h5 className="card-title">Timer</h5>
-        <p className="card-text">{formatTime(timer)}</p>
+    <div className="timer-container">
+      <h5 className="timer-title">Contest Timer</h5>
+      <div className="timer-boxes">
+        <div className="timer-box">
+          <span className="timer-value">{`${h}`}</span>
+          <span className="timer-label">Hours</span>
+        </div>
+        <div className="timer-box">
+          <span className="timer-value">{`${m < 10 ? '0' : ''}${m}`}</span>
+          <span className="timer-label">Minutes</span>
+        </div>
+        <div className="timer-box">
+          <span className="timer-value">{`${s < 10 ? '0' : ''}${s}`}</span>
+          <span className="timer-label">Second</span>
+        </div>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 
 import { AuthState } from '../context/auth/authState';
-import { Home, Register, Login, Profile, Problem, Admin, Problemset, Contest } from '../pages';
+import { Home, Register, Login, Profile, Problem, Admin, Problemset, Contest, AllSubmissions } from '../pages';
 import Navbar from './Navbar';
 import {PrivateRoute} from './PrivateRoute';
 
@@ -61,6 +61,10 @@ function App() {
             <Contest />
               </PrivateRoute>
             } />
+            <Route path="/allsubmissions" element={
+            <PrivateRoute>
+            <AllSubmissions />
+              </PrivateRoute>} />
         </Routes>
       </Router>
     

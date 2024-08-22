@@ -1,0 +1,57 @@
+/* General Navbar Styles */
+.navbar {
+    background-color: #343a40; /* Dark background for navbar */
+    padding: 0.5rem 1rem; /* Padding around navbar */
+  }
+  
+  .navbar-brand {
+    font-size: 1.5rem; /* Larger font size for brand */
+    color: #ffffff; /* White text color */
+    font-weight: bold; /* Bold text for brand */
+  }
+  
+  .navbar-toggler {
+    border: none; /* Remove border from toggler */
+  }
+  
+  .navbar-toggler-icon {
+    background-image: url('data:image/svg+xml;base64,...'); /* Custom toggle icon */
+  }
+  
+  /* Navbar Links */
+  .nav-link {
+    color: #ffffff; /* White text color for links */
+    margin: 0 0.5rem; /* Margin around links */
+  }
+  
+  .nav-link:hover {
+    color: #d3d3d3; /* Light color on hover */
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 767.98px) {
+    .navbar {
+      padding: 0.5rem 0.25rem; /* Adjust padding for smaller screens */
+    }
+  
+    .navbar-collapse {
+      text-align: center; /* Center text for smaller screens */
+    }
+  
+    .navbar-nav {
+      margin-top: 1rem; /* Add margin on top for navigation items */
+    }
+  
+    .nav-item {
+      margin: 0.5rem 0; /* Vertical margin for nav items */
+    }
+  }
+  
+  /* Spinner Loader Container */
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+  }
+  
