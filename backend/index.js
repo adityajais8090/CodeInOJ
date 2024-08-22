@@ -13,29 +13,12 @@ dotenv.config();
 const app = express();
 
 //middleware ,we used to get accept our data from frontend
-const prodOrigins = [
-  process.env.FRONTEND_URL_2,
-  process.env.FRONTEND_URL
+//middleware ,we used to get accept our data from frontend
+app.use(cors({
+  origin: process.env.FRONTEND_URL, // Update with your frontend domain
+  credentials: true // Allow credentials (cookies)
+}));
 
-];
-//   const devOrigin = ['http://localhost:5173'];
-const allowedOrigins = prodOrigins;
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error(`${origin} not allowed by cors`));
-        }
-     
-    },
-    optionsSuccessStatus: 200,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  }),
-);
 app.use(express.json());
 app.use(express.urlencoded({ extended : true }));
 app.use(cookieParser(process.env.SECRET_KEY));
@@ -190,16 +173,16 @@ app.delete('/logout', (req, res) => {
   
       // Fetch the user using the token
       const existUser = await User.findOne({ token });
-      if(!existUser){
-        res.status(404).json({
+      if (!existUser) {
+        return res.status(404).json({
           success: false,
           status: 404,
-          message : "User not found",
+          message: "User not found",
         });
       }
   
       // Send the profile data as JSON response
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         status: 200,
         existUser,
@@ -207,7 +190,38 @@ app.delete('/logout', (req, res) => {
     } catch (err) {
       // Handle errors
       console.error("Error fetching profile:", err);
-      res.status(500).json({
+      return res.status(500).json({
+        message: "Internal Server Error",
+        success: false,
+      });
+    }
+  });
+
+  app.get("/userInfo", auth, async (req, res) => {
+    try {
+      const { userId } = req.data; // Extract userId from the request data
+  
+      // Fetch the user using the userId
+      const existUser = await User.findOne({ userId });
+  
+      if (!existUser) {
+        return res.status(404).json({
+          success: false,
+          status: 404,
+          message: "User not found",
+        });
+      }
+  
+      // Send the profile data as JSON response
+      return res.status(200).json({
+        success: true,
+        status: 200,
+        data: existUser, // Changed to 'data' for a more conventional API response
+      });
+    } catch (err) {
+      // Handle errors
+      console.error("Error fetching UserInfo:", err);
+      return res.status(500).json({
         message: "Internal Server Error",
         success: false,
       });
