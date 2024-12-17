@@ -13,8 +13,33 @@ dotenv.config();
 const app = express();
 
 //middleware ,we used to get accept our data from frontend
-//middleware ,we used to get accept our data from frontend
-app.use(cors());
+const prodOrigins = [
+  process.env.FRONTEND_URL_2,
+  process.env.FRONTEND_URL
+];
+//   const devOrigin = ['http://localhost:5173'];
+const allowedOrigins = prodOrigins;
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error(`${origin} not allowed by cors`));
+        }
+     
+    },
+    optionsSuccessStatus: 200,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  }),
+);
+// //middleware ,we used to get accept our data from frontend
+// app.use(cors({
+//   origin: process.env.FRONTEND_URL, // Update with your frontend domain
+//   credentials: true // Allow credentials (cookies)
+// }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended : true }));
