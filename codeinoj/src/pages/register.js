@@ -29,10 +29,10 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-   // console.log(user);
+     console.log(user);
     try {
       const response = await uploadData(user);
-    //  console.log('Response at handleSubmit', response);
+    console.log('Response at handleSubmit', response);
       if (response.status === 201) {
         setLoading(false);
         return navigate('/');
