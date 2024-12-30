@@ -117,12 +117,13 @@ const handleLoginSubmit = async (e) => {
             <form>
                 <h1>Create Account</h1>
                 <div class="social-icons">
-                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    {/* <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
                     <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
                     <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a> */}
                 </div>
-                <span>or use your email for registeration</span>
+                
+                <span>Every Field is Mandatory*</span>
                 <div className="row row-login" >
                 <div className="col col-login" >
                 <input type="text" 
@@ -162,12 +163,12 @@ const handleLoginSubmit = async (e) => {
             <form>
                 <h1>Sign In</h1>
                 <div class="social-icons">
-                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    {/* <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
                     <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
                     <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a> */}
                 </div>
-                <span>or use your email password</span>
+                <span> Use your email password</span>
 
                 <input type="email" 
                 placeholder="Email*"
