@@ -1,5 +1,6 @@
 import '../styles/login.css';
 import { useState , useEffect, useContext } from 'react';
+import { uploadData } from '../service/api';
 import { checkData } from '../service/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,19 +9,59 @@ import { SpinnerLoader } from '../component';
 
 
 
+ const Login = () => {
+ const navigate = useNavigate();
+ const {isLoggedIn, errorl, login} = useAuth();
+ const [loading, setLoading ] = useState(false);
+ const [isRegisterActive, setIsRegisterActive] = useState(false);
 
 
-const Login = () => {
+ //Register
+ const [user, setUser] = useState({
+  firstname: "",
+  lastname: "",
+  email: "",
+  password: "",
+  role : "",
+ });
 
-  const {isLoggedIn, errorl, login} = useAuth();
- const [loading, setLoading ] = useState();
-  const [userInput, setUserInput] = useState({
-    email: "",
-    password: "",
+ //Login
+ const [userInput, setUserInput] = useState({
+  email: "",
+  password: "",
+});
+
+
+ const handleRegisterInput = (e) => {
+  let name = e.target.name;
+  let value = e.target.value;
+  //console.log(`Updating field: ${name}, Value: ${value}`);
+  setUser({
+    ...user,
+    [name]: value,
+    role : "user",
   });
+  }
 
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+     //console.log("User is here : ", user);
+    try {
+      const response = await uploadData(user);
+    //console.log('Response at handleSubmit', response);
+      if (response.status === 201) {
+        setLoading(false);
+        setIsRegisterActive(false);
+        return navigate('/login');
+      }
+    } catch (err) {
+      console.error('Error in handleSubmit', err);
+      setLoading(false); // Stop loading in case of an error
+    }
+  }
 
-  const navigate = useNavigate();
+  
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -34,7 +75,7 @@ const Login = () => {
 
  
 
-  const handleInput = (e) => {
+  const handleLoginInput = (e) => {
     const { name, value } = e.target;
     setUserInput({
       ...userInput,
@@ -43,7 +84,7 @@ const Login = () => {
   };
 
   
-const handleSubmit = async (e) => {
+const handleLoginSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   try {
@@ -58,53 +99,109 @@ const handleSubmit = async (e) => {
   }
 };
 
+    const handleRegisterClick = () => {
+      setIsRegisterActive(true);
+    };
+
+    const handleLoginClick = () => {
+      setIsRegisterActive(false);
+    };
+
 
   return (
-    <div className="Login">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-md-8 col-lg-5">
-            <div className="center-box bg-light">
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="exampleInputEmail1">Email address</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp"
-                    placeholder="Enter email"
-                    name="email"
-                    value={userInput.email}
-                    onChange={handleInput}
-                  />
-                  <small id="emailHelp" className="form-text text-muted">
-                    We'll never share your email with anyone else.
-                  </small>
+    <div class = "UserPage">
+    
+    <div className={`container-login ${isRegisterActive ? 'active' : ''}`} id="container-login">
+
+    <div class="form-container-login sign-up">
+            <form>
+                <h1>Create Account</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
-                <div className="form-group">
-                  <label htmlFor="exampleInputPassword1">Password</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="exampleInputPassword1"
-                    placeholder="Password"
-                    name="password"
-                    value={userInput.password}
-                    onChange={handleInput}
-                  />
+                <span>or use your email for registeration</span>
+                <div className="row row-login" >
+                <div className="col col-login" >
+                <input type="text" 
+                 name="firstname"
+                 placeholder="First name*"
+                 value={user.firstname}
+                 onChange={handleRegisterInput} />
+                 </div>
+                 <div className="col col-login">
+                <input type="text" 
+                name="lastname"
+                placeholder="Last name*"
+                value={user.lastname}
+                onChange={handleRegisterInput} />
                 </div>
-                <div className="form-group form-check">
-                  <input type="checkbox" className="form-check-input" id="exampleCheck1"></input>
-                  <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
                 </div>
-                <button type="submit" className="btn btn-primary">Login</button>
-              </form>
-            </div>
-          </div>
+
+                <input type="email" 
+                placeholder="Email*"
+                name="email"
+                value={user.email}
+                onChange={handleRegisterInput} />
+
+                <input type="password" 
+                placeholder="Password*" 
+                name="password"
+                value={user.password}
+                onChange={handleRegisterInput}/>
+                
+                <button type="submit" onClick={handleRegisterSubmit}>Sign Up</button>
+            </form>
+            {loading && <SpinnerLoader />}
         </div>
-      </div>
+
+      <div class="form-container-login sign-in">
+            
+            <form>
+                <h1>Sign In</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email password</span>
+
+                <input type="email" 
+                placeholder="Email*"
+                name="email"
+                value={userInput.email}
+                onChange={handleLoginInput} />
+
+                <input type="password" 
+                placeholder="Password*"
+                name="password"
+                value={userInput.password}
+                onChange={handleLoginInput} />
+
+                <button type="submit" onClick={handleLoginSubmit}>Sign In</button>
+            </form>
+        </div>
+
+        <div class="toggle-container-login">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your personal details to use all of site features</p>
+                    <button class="hidden" id="login" onClick={handleLoginClick}>Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Register with your personal details to use all of site features</p>
+                    <button class="hidden" id="register" onClick={handleRegisterClick}>Sign Up</button>
+                </div>
+            </div>
+        </div>
     </div>
+    </div>
+                  
   );
 };
 

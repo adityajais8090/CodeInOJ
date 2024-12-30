@@ -80,7 +80,7 @@ const Home = () => {
     </div>
 
     {loading ? <SpinnerLoader /> : (
-      <div className="container mt-5 mb-3">
+      <div className="container mb-3">
         <div className="row">
         <div style={{ textAlign: "left", marginBottom: "20px", padding: "30px 40px", borderRadius: "6px" }}>
       <h2 style={{ fontWeight: "700", fontSize: "40px", color: "#333", margin: "0" }}>Upcoming Contests</h2>
