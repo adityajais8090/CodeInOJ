@@ -119,5 +119,5 @@ This project is licensed under the **MIT License**.
 ---
 
 ## 📬 Contact  
-For queries or feedback, reach out at **[your-email@example.com](mailto:your-email@example.com)**.  
+For queries or feedback, reach out at **[your-email@example.com](mailto:a_jaiswal@ece.iitr.ac.in)**.  
 EOL
