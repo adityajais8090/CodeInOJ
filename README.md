@@ -5,6 +5,10 @@ cat <<EOL > README.md
 The **Online Judge Platform** is a user-friendly web application for solving coding problems, competing in live contests, and purchasing courses. It supports features such as code submission, progress tracking, leaderboards, and a secure payment gateway for buying additional courses.  
 
 ---
+##  Glimpse
+![Platform Screenshot](C:\Users\jarvis\OneDrive\Pictures\Screenshots\Screenshot 2025-01-03 050336.png)
+![Platform Screenshot](C:\Users\jarvis\OneDrive\Pictures\Screenshots\Screenshot 2025-01-03 050310.png)
+
 
 ## ✨ Features  
 
