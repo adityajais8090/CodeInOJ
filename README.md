@@ -82,9 +82,7 @@ The **Online Judge Platform** is a user-friendly web application for solving cod
 2. **Main Platform Service**:  
    - Manages user authentication, problem listings, and leaderboards.  
 
-### Security  
-- **DDoS Protection**: Prevent botnet attacks.  
-- **Sandboxing**: Execute code in isolated environments to prevent malicious scripts.  
+### Security    
 - **Execution Limits**: Enforce time and resource limits for code execution.  
 
 ---
@@ -113,11 +111,9 @@ Contributions are welcome!
 
 ---
 
-## 📜 License  
-This project is licensed under the **MIT License**.  
 
 ---
 
 ## 📬 Contact  
-For queries or feedback, reach out at **[your-email@example.com](mailto:a_jaiswal@ece.iitr.ac.in)**.  
+For queries or feedback, reach out at **[a_jaiswal@ece.iitr.ac.in](mailto:a_jaiswal@ece.iitr.ac.in)**.  
 EOL
