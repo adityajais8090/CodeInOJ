@@ -1,4 +1,4 @@
-cat <<EOL > README.md
+
 # 🧑‍💻 Online Judge Platform
 
 ## 🌟 Overview  
@@ -125,4 +125,4 @@ Contributions are welcome!
 
 ## 📬 Contact  
 For queries or feedback, reach out at **[a_jaiswal@ece.iitr.ac.in](mailto:a_jaiswal@ece.iitr.ac.in)**.  
-EOL
+
